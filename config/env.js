@@ -1,0 +1,50 @@
+// config/env.js — โหลด environment variables และรวมไว้ที่เดียว (ที่อื่นห้าม process.env ตรงๆ)
+require("dotenv").config();
+
+const ADMIN_DISCORD_IDS = (process.env.ADMIN_DISCORD_IDS || "")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
+
+// ตัด trailing slash ทิ้งกันกรณีตั้งค่าไม่ตรงกันแค่ / ท้าย URL (Discord เทียบ string เป๊ะๆ)
+const trimTrailingSlash = (url) => (url ? url.replace(/\/+$/, "") : url);
+
+const config = {
+  NODE_ENV: process.env.NODE_ENV || "production",
+  PORT: process.env.PORT || 3000,
+  FRONTEND_URL: trimTrailingSlash(process.env.FRONTEND_URL) || "http://localhost:3000",
+  SESSION_SECRET: process.env.SESSION_SECRET || "dev_secret_change_me",
+
+  discord: {
+    clientId: process.env.DISCORD_CLIENT_ID,
+    clientSecret: process.env.DISCORD_CLIENT_SECRET,
+    redirectUri: trimTrailingSlash(process.env.DISCORD_REDIRECT_URI),
+    botToken: process.env.DISCORD_BOT_TOKEN,
+    guildId: process.env.DISCORD_GUILD_ID,
+  },
+
+  ADMIN_DISCORD_IDS,
+};
+
+// เตือนตั้งแต่ตอน start ถ้า env ตัวสำคัญขาดหาย จะได้ไม่ต้องมาไล่ debug ตอน login พัง
+const requiredDiscordVars = {
+  DISCORD_CLIENT_ID: config.discord.clientId,
+  DISCORD_CLIENT_SECRET: config.discord.clientSecret,
+  DISCORD_REDIRECT_URI: config.discord.redirectUri,
+};
+const missing = Object.entries(requiredDiscordVars)
+  .filter(([, v]) => !v)
+  .map(([k]) => k);
+if (missing.length) {
+  console.warn(
+    `⚠️  ขาด environment variable: ${missing.join(", ")} — Discord login จะไม่ทำงานจนกว่าจะตั้งค่าให้ครบ`
+  );
+}
+if (config.SESSION_SECRET === "dev_secret_change_me" && config.NODE_ENV === "production") {
+  console.warn("⚠️  กำลังใช้ SESSION_SECRET ค่าเริ่มต้นบน production กรุณาตั้งค่าเป็นค่าสุ่มที่ปลอดภัย");
+}
+if (!config.discord.botToken || !config.discord.guildId) {
+  console.warn("ℹ️  ไม่ได้ตั้งค่า DISCORD_BOT_TOKEN/DISCORD_GUILD_ID — ฟีเจอร์ auto-join guild จะถูกข้าม");
+}
+
+module.exports = config;
