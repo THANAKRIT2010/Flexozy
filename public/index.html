@@ -39,7 +39,7 @@
     <a href="#/scripts" class="flex items-center gap-2.5 shrink-0">
       <div class="btn-cyan w-9 h-9 rounded-xl flex items-center justify-center"><i class="fa-solid fa-bolt text-sm"></i></div>
       <div class="leading-tight">
-        <span id="brandName" class="text-base sm:text-lg font-bold eyebrow tracking-wide text-slate-900">LUADER<span class="text-cyan">//</span>HUB</span>
+        <span id="brandName" class="text-base sm:text-lg font-bold eyebrow tracking-wide text-slate-900">FLEXOZY<span class="text-cyan">//</span>HUB</span>
         <span id="brandTagline" class="text-[9px] block text-slate-400 eyebrow tracking-wider">ROBLOX SCRIPT HUB</span>
       </div>
     </a>
@@ -228,7 +228,7 @@
   <!-- ================= TEAM ================= -->
   <section data-view="team">
     <div class="text-center max-w-xl mx-auto mb-6">
-      <h2 class="text-xl sm:text-2xl font-bold text-slate-900 mb-1.5"><i class="fa-solid fa-user-group text-cyan mr-1.5"></i>ทีมงาน Luader HUB</h2>
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-900 mb-1.5"><i class="fa-solid fa-user-group text-cyan mr-1.5"></i>ทีมงาน Flexozy</h2>
       <p class="text-xs text-slate-500">รายชื่อทีมงานและแอดมินทั้งหมดของเว็บนี้</p>
     </div>
     <div id="teamGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto"></div>
@@ -517,7 +517,7 @@
 
 <footer class="border-t border-line mt-10">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-    <span class="text-[11px] text-slate-400 eyebrow">© <span id="footerBrand">LUADER HUB</span> — ROBLOX SCRIPT COMMUNITY</span>
+    <span class="text-[11px] text-slate-400 eyebrow">© <span id="footerBrand">FLEXOZY HUB</span> — ROBLOX SCRIPT COMMUNITY</span>
     <a id="footerDiscord" href="#" target="_blank" class="hidden text-xs text-cyan"><i class="fa-brands fa-discord mr-1"></i>เข้าร่วม Discord</a>
   </div>
 </footer>
@@ -856,7 +856,7 @@ function showBannedScreen(reason){
           <i class="fa-solid fa-ban text-red-500 text-2xl"></i>
         </div>
         <h1 class="text-white text-lg font-bold mb-2">บัญชีนี้ถูกระงับการใช้งาน</h1>
-        <p class="text-slate-400 text-sm mb-1">คุณไม่สามารถใช้งาน Luader HUB ได้อีกต่อไป</p>
+        <p class="text-slate-400 text-sm mb-1">คุณไม่สามารถใช้งาน Flexozy ได้อีกต่อไป</p>
         ${reason?`<p class="text-slate-500 text-xs mt-3 bg-white/5 rounded-xl px-4 py-3">เหตุผล: ${esc(reason)}</p>`:''}
       </div>
     </div>`;
@@ -867,10 +867,10 @@ async function loadSettings(){
   try{
     const res = await fetch('/api/settings',{cache:'no-cache'});
     siteSettings = await res.json();
-    document.title = siteSettings.site_name || 'Luader HUB';
-    document.getElementById('brandName').textContent = siteSettings.site_name || 'LUADER//HUB';
+    document.title = siteSettings.site_name || 'Flexozy';
+    document.getElementById('brandName').textContent = siteSettings.site_name || 'FLEXOZY//HUB';
     document.getElementById('brandTagline').textContent = 'ROBLOX SCRIPT HUB';
-    document.getElementById('footerBrand').textContent = siteSettings.site_name || 'LUADER HUB';
+    document.getElementById('footerBrand').textContent = siteSettings.site_name || 'FLEXOZY HUB';
     if (siteSettings.tagline) document.getElementById('heroTitle').innerHTML = esc(siteSettings.tagline);
     document.getElementById('heroNote').textContent = siteSettings.hero_note || '';
     if (siteSettings.discord_invite) {
@@ -1214,7 +1214,7 @@ function renderCategories(){
   const grid = document.getElementById('categoriesGrid');
   if (!categoriesData.length){ section.classList.add('hidden'); return; }
   section.classList.remove('hidden');
-  const watermark = Array.from({length:14}).map(()=>'LUADER').join(' ');
+  const watermark = Array.from({length:14}).map(()=>'FLEXOZY').join(' ');
   grid.innerHTML = categoriesData.map(c=>`
     <a href="${esc(c.link||'#')}" ${c.link?'target="_blank" rel="noopener"':''} class="category-card" style="${c.image?`--bg:url('${esc(c.image)}')`:''}">
       ${c.image?`<div style="position:absolute;inset:0;background-image:url('${esc(c.image)}');background-size:cover;background-position:center;opacity:.28"></div>`:''}
@@ -1639,7 +1639,7 @@ async function loadRobloxGenres(){
 }
 function renderRobloxGenres(){
   const grid = document.getElementById('robloxGenresGrid');
-  const watermark = Array.from({length:14}).map(()=>'LUADER').join(' ');
+  const watermark = Array.from({length:14}).map(()=>'FLEXOZY').join(' ');
   grid.innerHTML = robloxGenresData.map(g=>{
     const count = robloxCatalog.filter(s=>s.genre_id===g.id).length;
     return `
