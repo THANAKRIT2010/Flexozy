@@ -58,7 +58,19 @@ p.sub{font-weight:300;font-size:clamp(14px,2vw,16px);line-height:1.8;color:rgba(
 .tag{display:inline-flex;align-items:center;gap:9px;font-family:'Kanit',sans-serif;font-weight:400;font-size:clamp(10px,1.2vw,12px);letter-spacing:.2em;color:var(--wht);opacity:.45;text-transform:uppercase}
 .tag em{width:5px;height:5px;border-radius:50%;background:var(--ice);box-shadow:0 0 10px 3px rgba(166,232,255,.7);font-style:normal;animation:blink 2s ease-in-out infinite}
 @keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.25;transform:scale(.75)}}
-@media(max-width:520px){.stack{width:46vw;height:46vw}main{padding:9vw 7vw}.corner{display:none}}
+.sound{position:fixed;z-index:5;bottom:22px;right:22px;display:flex;align-items:center;gap:10px}
+.sound.open .vol{width:96px;opacity:1;padding:0 14px 0 6px}
+.snd-btn{position:relative;width:46px;height:46px;border-radius:50%;border:1px solid rgba(166,232,255,.25);background:rgba(8,14,28,.55);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:border-color .3s,box-shadow .3s}
+.snd-btn:hover{border-color:rgba(166,232,255,.55)}
+.snd-btn svg{width:19px;height:19px;stroke:var(--ice);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 5px rgba(166,232,255,.6))}
+.snd-btn .ring{position:absolute;inset:-1px;border-radius:50%;border:1px solid var(--ice);opacity:0;animation:ripple 2.2s ease-out infinite}
+.snd-btn.playing .ring{opacity:.5}
+@keyframes ripple{0%{transform:scale(1);opacity:.5}100%{transform:scale(1.5);opacity:0}}
+.vol{width:0;opacity:0;overflow:hidden;transition:width .35s ease,opacity .3s ease,padding .35s ease;background:rgba(8,14,28,.55);border:1px solid rgba(166,232,255,.25);backdrop-filter:blur(10px);border-radius:99px;height:46px;display:flex;align-items:center}
+.vol input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:3px;border-radius:99px;background:rgba(166,232,255,.2);outline:none;cursor:pointer}
+.vol input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--ice);box-shadow:0 0 8px 2px rgba(166,232,255,.8);cursor:pointer}
+.vol input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;border:none;background:var(--ice);box-shadow:0 0 8px 2px rgba(166,232,255,.8);cursor:pointer}
+@media(max-width:520px){.stack{width:46vw;height:46vw}main{padding:9vw 7vw}.corner{display:none}.sound{bottom:16px;right:16px}.sound.open .vol{width:78px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important}}
 </style></head>
 <body oncontextmenu="return false">
@@ -90,6 +102,17 @@ p.sub{font-weight:300;font-size:clamp(14px,2vw,16px);line-height:1.8;color:rgba(
 <div class="pulse"><i></i></div>
 <div class="tag"><em></em>flexozy.xyz</div>
 </main>
+
+<audio id="bgm" src="bg-music.mp3" loop preload="none"></audio>
+<div class="sound" id="soundCtl">
+  <div class="vol"><input type="range" id="volSlider" min="0" max="100" value="45"></div>
+  <button class="snd-btn" id="sndBtn" aria-label="เปิด/ปิดเสียง">
+    <span class="ring"></span>
+    <svg id="sndIconOn" viewBox="0 0 24 24" style="display:none"><path d="M4 9v6h4l5 5V4L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a9 9 0 0 1 0 12"/></svg>
+    <svg id="sndIconOff" viewBox="0 0 24 24"><path d="M4 9v6h4l5 5V4L8 9H4z"/><path d="M16 9l5 6M21 9l-5 6"/></svg>
+  </button>
+</div>
+
 <script>
 (function(){var w=window,d=document,m=d.getElementById('mn'),sp=d.getElementById('sparks');
 var GLYPH=['✦','✧','⋆','˚'];
@@ -99,6 +122,17 @@ w.addEventListener('mousemove',function(ev){var px=(ev.clientX/w.innerWidth-.5)*
 function blk(ev){var k=ev.key||'',c=ev.ctrlKey||ev.metaKey,s=ev.shiftKey;if(k==='F12'||(c&&s&&['I','J','C','i','j','c'].indexOf(k)>-1)||(c&&['u','U','s','S'].indexOf(k)>-1)){ev.preventDefault();return false}}
 d.addEventListener('keydown',blk,true);
 d.addEventListener('contextmenu',function(ev){ev.preventDefault()},true);
+
+var au=d.getElementById('bgm'),btn=d.getElementById('sndBtn'),ctl=d.getElementById('soundCtl'),sl=d.getElementById('volSlider'),onI=d.getElementById('sndIconOn'),offI=d.getElementById('sndIconOff');
+au.volume=sl.value/100;
+function upIcon(){var playing=!au.paused&&au.volume>0;onI.style.display=playing?'block':'none';offI.style.display=playing?'none':'block';btn.classList.toggle('playing',playing)}
+btn.addEventListener('click',function(){if(au.paused){au.play().catch(function(){});ctl.classList.add('open')}else{au.pause()}upIcon()});
+sl.addEventListener('input',function(){au.volume=sl.value/100;if(au.volume>0&&au.paused){au.play().catch(function(){})}upIcon()});
+var hoverTimer;
+ctl.addEventListener('mouseenter',function(){clearTimeout(hoverTimer);ctl.classList.add('open')});
+ctl.addEventListener('mouseleave',function(){hoverTimer=setTimeout(function(){ctl.classList.remove('open')},900)});
+btn.addEventListener('touchstart',function(){ctl.classList.toggle('open')},{passive:true});
+upIcon();
 })();
 </script>
 </body></html>
