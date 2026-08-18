@@ -58,13 +58,17 @@ p.sub{font-weight:300;font-size:clamp(14px,2vw,16px);line-height:1.8;color:rgba(
 .tag{display:inline-flex;align-items:center;gap:9px;font-family:'Kanit',sans-serif;font-weight:400;font-size:clamp(10px,1.2vw,12px);letter-spacing:.2em;color:var(--wht);opacity:.45;text-transform:uppercase}
 .tag em{width:5px;height:5px;border-radius:50%;background:var(--ice);box-shadow:0 0 10px 3px rgba(166,232,255,.7);font-style:normal;animation:blink 2s ease-in-out infinite}
 @keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.25;transform:scale(.75)}}
-.visits{position:fixed;z-index:5;top:18px;left:18px;display:flex;align-items:center;gap:7px;background:rgba(8,14,28,.55);backdrop-filter:blur(10px);border:1px solid rgba(166,232,255,.18);border-radius:99px;padding:7px 14px;font-family:'Kanit',sans-serif}
-.visits .vlbl{font-size:10px;letter-spacing:.08em;color:var(--wht);opacity:.55}
-.visits .vnum{display:flex;font-size:13px;font-weight:600;letter-spacing:.02em}
-.visits .vnum span{display:inline-block;animation:digitPop .5s ease backwards}
-@keyframes digitPop{0%{transform:translateY(4px);opacity:0}100%{transform:translateY(0);opacity:1}}
+.visits{position:fixed;z-index:5;top:18px;left:18px;display:flex;align-items:center;gap:11px;background:rgba(8,14,28,.6);backdrop-filter:blur(14px);border:1px solid rgba(166,232,255,.2);border-radius:16px;padding:9px 15px 9px 9px;box-shadow:0 10px 28px rgba(0,0,0,.35)}
+.v-ico{position:relative;width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 40% 35%,rgba(74,120,255,.4),rgba(74,120,255,.05) 70%)}
+.v-ico svg{width:15px;height:15px;stroke:var(--ice);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 4px rgba(166,232,255,.7))}
+.v-ico .rp{position:absolute;inset:-3px;border-radius:50%;border:1px solid var(--ice);opacity:0;animation:vripple 2.4s ease-out infinite}
+@keyframes vripple{0%{transform:scale(.85);opacity:.5}100%{transform:scale(1.35);opacity:0}}
+.v-body{display:flex;flex-direction:column;line-height:1.2}
+.visits .vnum{font-family:'Kanit',sans-serif;font-weight:700;font-size:17px;letter-spacing:.01em;background:linear-gradient(90deg,#ff6b6b,#ffa94d,#ffd43b,#69db7c,#4dd4c0,#4dabf7,#9775fa,#f783c6,#ff6b6b);background-size:320% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:hueflow 7s linear infinite}
+@keyframes hueflow{0%{background-position:0% 50%}100%{background-position:320% 50%}}
+.visits .vlbl{font-family:'Kanit',sans-serif;font-weight:400;font-size:9px;letter-spacing:.09em;color:var(--wht);opacity:.5;margin-top:1px}
 .visits img{display:block;height:20px;border-radius:99px}
-@media(max-width:520px){.visits{top:12px;left:12px;padding:6px 11px}.visits .vlbl{display:none}}
+@media(max-width:520px){.visits{top:12px;left:12px;padding:7px 12px 7px 7px}.v-ico{width:28px;height:28px}.visits .vnum{font-size:15px}}
 .player{position:fixed;z-index:5;bottom:22px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;background:rgba(8,14,28,.6);backdrop-filter:blur(14px);border:1px solid rgba(166,232,255,.18);border-radius:999px;padding:7px 16px 7px 7px;width:min(92vw,380px);box-shadow:0 10px 34px rgba(0,0,0,.4)}
 .disc{position:relative;width:40px;height:40px;border-radius:50%;flex-shrink:0;cursor:pointer;overflow:hidden;border:2px solid rgba(166,232,255,.35);box-shadow:0 0 16px rgba(74,120,255,.5)}
 .disc img{width:100%;height:100%;object-fit:cover;display:block;filter:brightness(1.05)}
@@ -125,8 +129,11 @@ p.sub{font-weight:300;font-size:clamp(14px,2vw,16px);line-height:1.8;color:rgba(
 </main>
 
 <div class="visits" id="visits">
-  <span class="vlbl">ผู้เข้าชม</span>
-  <span class="vnum" id="vnum">···</span>
+  <div class="v-ico"><span class="rp"></span><svg viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg></div>
+  <div class="v-body">
+    <span class="vnum" id="vnum">0</span>
+    <span class="vlbl">ผู้เข้าชมเว็บไซต์</span>
+  </div>
 </div>
 
 <audio id="bgm" src="bg-music.mp3" loop preload="auto"></audio>
@@ -192,18 +199,15 @@ player.addEventListener('mouseleave',function(){hoverTimer=setTimeout(function()
 player.addEventListener('mouseenter',function(){clearTimeout(hoverTimer)});
 upIcon();
 
-var RB=['#ff6b6b','#ffa94d','#ffd43b','#69db7c','#4dd4c0','#4dabf7','#9775fa','#f783c6'];
-function renderCount(numStr){
-  var box=d.getElementById('vnum');box.innerHTML='';
-  var digits=String(numStr).split('');
-  digits.forEach(function(ch,i){
-    var s=d.createElement('span');
-    s.textContent=ch;
-    s.style.color=RB[i%RB.length];
-    s.style.textShadow='0 0 8px '+RB[i%RB.length]+'99';
-    s.style.animationDelay=(i*0.06)+'s';
-    box.appendChild(s)
-  })
+function animateCount(el,target,dur){
+  var t0=null;
+  function step(ts){
+    if(!t0)t0=ts;
+    var p=Math.min((ts-t0)/dur,1),eased=1-Math.pow(1-p,3);
+    el.textContent=Math.floor(target*eased).toLocaleString();
+    if(p<1)requestAnimationFrame(step);else el.textContent=target.toLocaleString()
+  }
+  requestAnimationFrame(step)
 }
 fetch('https://visitor-badge.laobi.icu/badge?page_id=flexozy.xyz&left_text=visits',{mode:'cors'})
   .then(function(r){if(!r.ok)throw 0;return r.text()})
@@ -212,11 +216,11 @@ fetch('https://visitor-badge.laobi.icu/badge?page_id=flexozy.xyz&left_text=visit
     if(!ms||!ms.length)throw 0;
     var last=ms[ms.length-1].replace(/[><\/text,]/g,'');
     if(!/^\d+$/.test(last))throw 0;
-    renderCount(last)
+    animateCount(d.getElementById('vnum'),parseInt(last,10),1100)
   })
   .catch(function(){
     var vs=d.getElementById('visits');
-    vs.innerHTML='<img src="https://visitor-badge.laobi.icu/badge?page_id=flexozy.xyz&left_text=ผู้เข้าชม&left_color=0a1428&right_color=4a78ff&radius=14&height=20" alt="จำนวนผู้เข้าชม">'
+    vs.innerHTML='<div class="v-ico"><span class="rp"></span><svg viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg></div><div class="v-body"><img src="https://visitor-badge.laobi.icu/badge?page_id=flexozy.xyz&left_text=ผู้เข้าชม&left_color=0a1428&right_color=4a78ff&radius=14&height=20" alt="จำนวนผู้เข้าชม"></div>'
   });
 })();
 </script>
