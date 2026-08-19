@@ -1620,6 +1620,7 @@ async function deleteProduct(id){
   }catch(e){ notifyToast('error','ลบสินค้าไม่สำเร็จ'); }
 }
 
+function copyScript(btn, text){
   navigator.clipboard.writeText(text).then(()=>{
     btn.innerHTML = `<i class="fa-solid fa-check"></i> <span>สำเร็จ</span>`;
     notifyToast('success','คัดลอกสคริปต์แล้ว');
