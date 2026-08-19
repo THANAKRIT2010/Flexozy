@@ -71,13 +71,7 @@
   </div>
 </nav>
 
-<!-- ป้ายประกาศแบบเลื่อน — ซ่อนอัตโนมัติถ้าแอดมินไม่ได้ตั้งข้อความไว้ -->
-<div id="announceTicker" class="hidden sticky top-16 z-30 bg-gradient-to-r from-cyan to-[#4F46E5] overflow-hidden">
-  <div class="ticker-track flex items-center py-1.5">
-    <div id="announceTickerText" class="flex shrink-0 text-[11.5px] font-medium text-white eyebrow tracking-wide"></div>
-    <div id="announceTickerText2" class="flex shrink-0 text-[11.5px] font-medium text-white eyebrow tracking-wide" aria-hidden="true"></div>
-  </div>
-</div>
+<!-- ป้ายประกาศแบบเลื่อน — ซ่อนอัตโนมัติถ้าแอดมินไม่ได้ตั้งข้อความไว้ (ย้ายไปแสดงในหน้า hero แทนแบบ sticky ด้านล่าง) -->
 
 <!-- Mobile bottom nav -->
 <div class="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-white/97 backdrop-blur-md border-t border-line z-40 px-1.5 flex items-stretch gap-1">
@@ -131,42 +125,53 @@
       </div>
     </div>
 
-    <!-- แถบรวม: เมนูลัด 4 อัน + สถิติ 4 อัน ในกล่องเดียว (จัดเรียงแบบเดียวกับที่เห็นในหน้าร้านทั่วไป) -->
-    <div class="panel-card rounded-2xl max-w-5xl mx-auto mb-4 overflow-hidden">
-      <div class="grid grid-cols-2 lg:grid-cols-4 divide-x divide-y lg:divide-y-0 divide-line">
-        <a href="#/scripts" class="flex items-center justify-between gap-2 px-4 py-3.5 hover:bg-slate-100 transition-colors">
-          <div class="flex items-center gap-2.5 min-w-0"><i class="fa-solid fa-folder-open text-cyan"></i><div class="min-w-0"><span class="block text-xs font-semibold text-slate-900 truncate">สคริปต์ทั้งหมด</span><span class="block text-[9.5px] text-slate-400">เลือกสคริปต์ที่ต้องการ</span></div></div>
-          <i class="fa-solid fa-chevron-right text-[10px] text-slate-400 shrink-0"></i>
-        </a>
-        <a href="#/vault" class="flex items-center justify-between gap-2 px-4 py-3.5 hover:bg-slate-100 transition-colors">
-          <div class="flex items-center gap-2.5 min-w-0"><i class="fa-solid fa-lock text-cyan"></i><div class="min-w-0"><span class="block text-xs font-semibold text-slate-900 truncate">Vault ส่วนตัว</span><span class="block text-[9.5px] text-slate-400">เก็บโค้ดอย่างปลอดภัย</span></div></div>
-          <i class="fa-solid fa-chevron-right text-[10px] text-slate-400 shrink-0"></i>
-        </a>
-        <a href="#/roblox" class="flex items-center justify-between gap-2 px-4 py-3.5 hover:bg-slate-100 transition-colors">
-          <div class="flex items-center gap-2.5 min-w-0"><i class="fa-brands fa-google-play text-cyan"></i><div class="min-w-0"><span class="block text-xs font-semibold text-slate-900 truncate">Roblox ID</span><span class="block text-[9.5px] text-slate-400">ค้นหาเสียง/ไอเทม</span></div></div>
-          <i class="fa-solid fa-chevron-right text-[10px] text-slate-400 shrink-0"></i>
-        </a>
-        <a href="#/team" class="flex items-center justify-between gap-2 px-4 py-3.5 hover:bg-slate-100 transition-colors">
-          <div class="flex items-center gap-2.5 min-w-0"><i class="fa-solid fa-user-group text-cyan"></i><div class="min-w-0"><span class="block text-xs font-semibold text-slate-900 truncate">ทีมงาน</span><span class="block text-[9.5px] text-slate-400">ติดต่อทีมงาน</span></div></div>
-          <i class="fa-solid fa-chevron-right text-[10px] text-slate-400 shrink-0"></i>
-        </a>
+    <!-- เมนูลัด 4 อัน — การ์ดแยกแต่ละใบ มีระยะห่างชัดเจน ไม่ใช่กล่องเดียวแบ่งช่อง -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 max-w-5xl mx-auto mb-2.5">
+      <a href="#/scripts" class="panel-card rounded-2xl flex items-center justify-between gap-2 px-4 py-3.5">
+        <div class="flex items-center gap-2.5 min-w-0"><i class="fa-solid fa-folder-open text-cyan"></i><div class="min-w-0"><span class="block text-xs font-semibold text-slate-900 truncate">สคริปต์ทั้งหมด</span><span class="block text-[9.5px] text-slate-400">เลือกสคริปต์ที่ต้องการ</span></div></div>
+        <i class="fa-solid fa-chevron-right text-[10px] text-slate-400 shrink-0"></i>
+      </a>
+      <a href="#/vault" class="panel-card rounded-2xl flex items-center justify-between gap-2 px-4 py-3.5">
+        <div class="flex items-center gap-2.5 min-w-0"><i class="fa-solid fa-lock text-cyan"></i><div class="min-w-0"><span class="block text-xs font-semibold text-slate-900 truncate">Vault ส่วนตัว</span><span class="block text-[9.5px] text-slate-400">เก็บโค้ดอย่างปลอดภัย</span></div></div>
+        <i class="fa-solid fa-chevron-right text-[10px] text-slate-400 shrink-0"></i>
+      </a>
+      <a href="#/roblox" class="panel-card rounded-2xl flex items-center justify-between gap-2 px-4 py-3.5">
+        <div class="flex items-center gap-2.5 min-w-0"><i class="fa-brands fa-google-play text-cyan"></i><div class="min-w-0"><span class="block text-xs font-semibold text-slate-900 truncate">Roblox ID</span><span class="block text-[9.5px] text-slate-400">ค้นหาเสียง/ไอเทม</span></div></div>
+        <i class="fa-solid fa-chevron-right text-[10px] text-slate-400 shrink-0"></i>
+      </a>
+      <a href="#/team" class="panel-card rounded-2xl flex items-center justify-between gap-2 px-4 py-3.5">
+        <div class="flex items-center gap-2.5 min-w-0"><i class="fa-solid fa-user-group text-cyan"></i><div class="min-w-0"><span class="block text-xs font-semibold text-slate-900 truncate">ทีมงาน</span><span class="block text-[9.5px] text-slate-400">ติดต่อทีมงาน</span></div></div>
+        <i class="fa-solid fa-chevron-right text-[10px] text-slate-400 shrink-0"></i>
+      </a>
+    </div>
+
+    <!-- สถิติ 4 อัน — การ์ดแยกแต่ละใบเช่นกัน -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 max-w-5xl mx-auto mb-4">
+      <div class="panel-card rounded-2xl flex items-center gap-2.5 px-4 py-3.5">
+        <div class="w-8 h-8 rounded-lg bg-blue-50 text-cyan flex items-center justify-center shrink-0"><i class="fa-solid fa-users text-xs"></i></div>
+        <div><span class="eyebrow text-[9px] text-slate-400 block uppercase">กำลังออนไลน์</span><span id="statOnline" class="text-base font-bold text-slate-900 eyebrow">1</span></div>
       </div>
-      <div class="grid grid-cols-2 lg:grid-cols-4 divide-x divide-line border-t border-line">
-        <div class="flex items-center gap-2.5 px-4 py-3.5">
-          <div class="w-8 h-8 rounded-lg bg-blue-50 text-cyan flex items-center justify-center shrink-0"><i class="fa-solid fa-users text-xs"></i></div>
-          <div><span class="eyebrow text-[9px] text-slate-400 block uppercase">กำลังออนไลน์</span><span id="statOnline" class="text-base font-bold text-slate-900 eyebrow">1</span></div>
-        </div>
-        <div class="flex items-center gap-2.5 px-4 py-3.5">
-          <div class="w-8 h-8 rounded-lg bg-blue-50 text-cyan flex items-center justify-center shrink-0"><i class="fa-solid fa-eye text-xs"></i></div>
-          <div><span class="eyebrow text-[9px] text-slate-400 block uppercase">ยอดเข้าชม</span><span id="statViews" class="text-base font-bold text-slate-900 eyebrow">0</span></div>
-        </div>
-        <div class="flex items-center gap-2.5 px-4 py-3.5">
-          <div class="w-8 h-8 rounded-lg bg-blue-50 text-cyan flex items-center justify-center shrink-0"><i class="fa-solid fa-scroll text-xs"></i></div>
-          <div><span class="eyebrow text-[9px] text-slate-400 block uppercase">สคริปต์ทั้งหมด</span><span id="statScripts" class="text-base font-bold text-slate-900 eyebrow">0</span></div>
-        </div>
-        <div class="flex items-center gap-2.5 px-4 py-3.5">
-          <div class="w-8 h-8 rounded-lg bg-green-500/10 text-green-400 flex items-center justify-center shrink-0"><i class="fa-solid fa-check text-xs"></i></div>
-          <div><span class="eyebrow text-[9px] text-slate-400 block uppercase">ระบบ</span><span class="text-base font-bold text-green-400 eyebrow">ออนไลน์</span></div>
+      <div class="panel-card rounded-2xl flex items-center gap-2.5 px-4 py-3.5">
+        <div class="w-8 h-8 rounded-lg bg-blue-50 text-cyan flex items-center justify-center shrink-0"><i class="fa-solid fa-eye text-xs"></i></div>
+        <div><span class="eyebrow text-[9px] text-slate-400 block uppercase">ยอดเข้าชม</span><span id="statViews" class="text-base font-bold text-slate-900 eyebrow">0</span></div>
+      </div>
+      <div class="panel-card rounded-2xl flex items-center gap-2.5 px-4 py-3.5">
+        <div class="w-8 h-8 rounded-lg bg-blue-50 text-cyan flex items-center justify-center shrink-0"><i class="fa-solid fa-scroll text-xs"></i></div>
+        <div><span class="eyebrow text-[9px] text-slate-400 block uppercase">สคริปต์ทั้งหมด</span><span id="statScripts" class="text-base font-bold text-slate-900 eyebrow">0</span></div>
+      </div>
+      <div class="panel-card rounded-2xl flex items-center gap-2.5 px-4 py-3.5">
+        <div class="w-8 h-8 rounded-lg bg-green-500/10 text-green-400 flex items-center justify-center shrink-0"><i class="fa-solid fa-check text-xs"></i></div>
+        <div><span class="eyebrow text-[9px] text-slate-400 block uppercase">ระบบ</span><span class="text-base font-bold text-green-400 eyebrow">ออนไลน์</span></div>
+      </div>
+    </div>
+
+    <!-- ป้ายประกาศ — การ์ดแยกรูปแบบเดียวกับกล่องด้านบน มีป้าย "ประกาศ" ลอยซ้าย + ข้อความเลื่อนขวา -->
+    <div id="announceTicker" class="hidden panel-card rounded-2xl max-w-5xl mx-auto mb-4 pl-2 pr-4 py-2 flex items-center gap-3 overflow-hidden">
+      <span class="shrink-0 inline-flex items-center gap-1.5 bg-slate-100 text-slate-900 text-[10.5px] font-semibold px-3 py-1.5 rounded-xl"><i class="fa-solid fa-bell text-cyan"></i>ประกาศ</span>
+      <div class="flex-1 min-w-0 overflow-hidden">
+        <div class="ticker-track flex items-center">
+          <div id="announceTickerText" class="flex shrink-0 text-[11px] text-slate-500"></div>
+          <div id="announceTickerText2" class="flex shrink-0 text-[11px] text-slate-500" aria-hidden="true"></div>
         </div>
       </div>
     </div>
@@ -187,8 +192,9 @@
           <span class="eyebrow text-[9px] text-slate-400 block uppercase mb-0.5">Flexozy</span>
           <h2 class="text-base font-bold text-slate-900">หมวดหมู่สินค้า</h2>
         </div>
+        <a href="#scripts" class="text-xs font-semibold text-cyan flex items-center gap-1 hover:opacity-70">ดูทั้งหมด <i class="fa-solid fa-arrow-right text-[10px]"></i></a>
       </div>
-      <div id="categoriesGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+      <div id="categoriesGrid" class="grid grid-cols-2 gap-3.5 sm:gap-4"></div>
     </div>
 
     <div class="max-w-5xl mx-auto mb-3 flex items-center justify-between">
@@ -1398,18 +1404,15 @@ function renderCategories(){
   const grid = document.getElementById('categoriesGrid');
   if (!categoriesData.length){ section.classList.add('hidden'); return; }
   section.classList.remove('hidden');
-  const watermark = Array.from({length:14}).map(()=>'FLEXOZY').join(' ');
   grid.innerHTML = categoriesData.map(c=>`
-    <a href="${esc(c.link||'#')}" ${c.link?'target="_blank" rel="noopener"':''} class="category-card" style="${c.image?`--bg:url('${esc(c.image)}')`:''}">
-      ${c.image?`<div style="position:absolute;inset:0;background-image:url('${esc(c.image)}');background-size:cover;background-position:center;opacity:.28"></div>`:''}
-      <div class="category-watermark"><span>${watermark}</span><span>${watermark}</span></div>
-      ${c.image?`<img src="${esc(c.image)}" class="category-icon" onerror="this.style.display='none'">`:''}
+    <a href="${esc(c.link||'#')}" ${c.link?'target="_blank" rel="noopener"':''} class="category-card" ${c.image?`style="background-image:url('${esc(c.image)}')"`:''}>
+      <span class="category-badge"><i class="fa-solid fa-layer-group"></i> Flexozy</span>
       <div class="category-body">
         <p class="category-title">${esc(c.title)}</p>
         ${c.subtitle?`<p class="category-subtitle">${esc(c.subtitle)}</p>`:''}
+        ${c.link?`<p class="category-link"><i class="fa-solid fa-link"></i>${esc(c.link)}</p>`:''}
       </div>
-      <i class="fa-solid fa-arrow-right category-arrow"></i>
-      ${c.link?`<span class="category-count">${esc(c.link)}</span>`:''}
+      <span class="category-arrow-btn"><i class="fa-solid fa-arrow-right"></i></span>
     </a>`).join('');
 }
 async function loadScripts(){
