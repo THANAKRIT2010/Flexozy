@@ -13,41 +13,96 @@
   :root{
     --cyan:#2563EB; --cyan-deep:#1D4ED8; --sky:#38BDF8;
     --ink:#0F172A; --slate:#475569; --mist:#94A3B8;
-    --line:#E2E8F0; --panel:#FFFFFF; --canvas:#F8FAFC;
+    --line:#E2E8F0; --panel:#FFFFFF; --canvas-deep:#060B18;
+    --glow-a: rgba(56,189,248,.35); --glow-b: rgba(37,99,235,.30);
   }
   *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
   body{
     margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
     font-family:'IBM Plex Sans Thai',sans-serif; color:var(--ink);
-    background:
-      radial-gradient(ellipse 900px 500px at 12% -10%, #DBEAFE 0%, transparent 60%),
-      radial-gradient(ellipse 700px 500px at 105% 110%, #E0F2FE 0%, transparent 55%),
-      var(--canvas);
-    padding:20px; overflow-x:hidden;
+    background:var(--canvas-deep);
+    padding:20px; overflow:hidden; position:relative;
   }
+
+  /* ===== พื้นหลังลึก: เมช grid ทรงบล็อกจาง ๆ + แสงฟุ้ง ===== */
+  .bg-mesh{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(ellipse 800px 520px at 15% 8%, var(--glow-a) 0%, transparent 60%),
+      radial-gradient(ellipse 700px 560px at 90% 92%, var(--glow-b) 0%, transparent 58%),
+      radial-gradient(ellipse 1000px 700px at 50% 50%, rgba(15,23,42,0) 0%, var(--canvas-deep) 75%);
+  }
+  .bg-grid{
+    position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.35;
+    background-image:
+      linear-gradient(rgba(148,163,184,.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(148,163,184,.08) 1px, transparent 1px);
+    background-size:44px 44px;
+    mask-image:radial-gradient(ellipse 900px 650px at 50% 45%, #000 0%, transparent 75%);
+  }
+
+  /* ===== ท้องฟ้าดาว + ดาวตก ===== */
+  .star-field{ position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+  .star{
+    position:absolute; border-radius:50%; background:#fff;
+    animation:twinkle ease-in-out infinite;
+  }
+  @keyframes twinkle{
+    0%,100%{ opacity:.25; } 50%{ opacity:1; }
+  }
+  .shooting-star{
+    position:absolute; width:2px; height:2px; border-radius:50%;
+    background:#fff; opacity:0;
+    box-shadow:0 0 0 1px rgba(255,255,255,.1);
+    animation:shoot 6.5s linear infinite;
+  }
+  .shooting-star::before{
+    content:''; position:absolute; top:50%; right:0; width:130px; height:1px;
+    background:linear-gradient(90deg, rgba(255,255,255,.9), rgba(255,255,255,0));
+    transform:translateY(-50%);
+  }
+  @keyframes shoot{
+    0%{ transform:translate(0,0); opacity:0; }
+    4%{ opacity:1; }
+    18%{ transform:translate(-420px,220px); opacity:0; }
+    100%{ transform:translate(-420px,220px); opacity:0; }
+  }
+  @media (max-width:760px){ .star-field{ display:none; } }
+
   .eyebrow{ font-family:'JetBrains Mono',monospace; letter-spacing:.14em; }
   .back-home{
     position:fixed; top:22px; left:22px; display:flex; align-items:center; gap:7px;
-    font-size:13px; color:var(--slate); text-decoration:none; font-weight:500; z-index:10;
+    font-size:13px; color:rgba(226,232,240,.75); text-decoration:none; font-weight:500; z-index:10;
     transition:color .15s ease, transform .15s ease;
   }
-  .back-home:hover{ color:var(--ink); transform:translateX(-3px); }
+  .back-home:hover{ color:#fff; transform:translateX(-3px); }
 
-  /* ===== การ์ดหลัก: สองแผงสลับกัน (โควตแบรนด์ / ปุ่ม OAuth) ===== */
+  /* ===== การ์ดหลัก ===== */
+  .stage{ position:relative; z-index:2; width:100%; display:flex; justify-content:center; }
   .auth-shell{
     position:relative; width:100%; max-width:860px; min-height:520px;
     background:var(--panel); border-radius:28px; overflow:hidden;
-    box-shadow:0 30px 70px -20px rgba(15,23,42,.22), 0 2px 8px rgba(15,23,42,.05);
-    border:1px solid var(--line);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,.9) inset,
+      0 60px 120px -30px rgba(2,6,23,.65),
+      0 20px 45px -18px rgba(2,6,23,.55),
+      0 0 0 1px rgba(148,163,184,.14);
+    animation:shell-in .7s cubic-bezier(.16,1,.3,1) both;
+  }
+  @keyframes shell-in{
+    from{ opacity:0; transform:translateY(22px) scale(.98); }
+    to{ opacity:1; transform:translateY(0) scale(1); }
   }
   .auth-grid{ display:grid; grid-template-columns:1fr 1fr; min-height:520px; }
 
-  /* แผงซ้าย: ปุ่ม login จริง (Discord / Google) */
+  /* แผงซ้าย: ปุ่ม login จริง */
   .action-pane{ padding:56px 48px; display:flex; flex-direction:column; justify-content:center; position:relative; z-index:2; }
   .action-icon{
     width:52px; height:52px; border-radius:16px; display:flex; align-items:center; justify-content:center;
     background:linear-gradient(135deg,var(--cyan) 0%,var(--cyan-deep) 100%);
-    color:#fff; font-size:22px; margin-bottom:22px; box-shadow:0 10px 24px -6px rgba(37,99,235,.45);
+    color:#fff; font-size:22px; margin-bottom:22px;
+    box-shadow:0 12px 26px -6px rgba(37,99,235,.5), inset 0 1px 0 rgba(255,255,255,.35), inset 0 -3px 6px rgba(0,0,0,.15);
   }
   .action-title{ font-size:27px; font-weight:800; line-height:1.25; margin:0 0 8px; letter-spacing:-.01em; }
   .action-sub{ font-size:13.5px; color:var(--slate); line-height:1.6; margin:0 0 30px; max-width:340px; }
@@ -56,12 +111,14 @@
     display:flex; align-items:center; gap:12px; width:100%; padding:14px 18px; border-radius:14px;
     border:1.5px solid var(--line); background:#fff; cursor:pointer; text-decoration:none;
     font-family:inherit; font-size:14.5px; font-weight:600; color:var(--ink);
+    box-shadow:0 1px 2px rgba(15,23,42,.04), 0 1px 0 rgba(255,255,255,.6) inset;
     transition:border-color .15s ease, transform .15s ease, box-shadow .15s ease, background .15s ease;
     margin-bottom:12px;
   }
-  .oauth-btn:hover{ transform:translateY(-2px); box-shadow:0 10px 22px -8px rgba(15,23,42,.18); }
-  .oauth-btn.discord{ border-color:#5865F220; background:#5865F208; }
-  .oauth-btn.discord:hover{ border-color:#5865F2; background:#5865F210; }
+  .oauth-btn:hover{ transform:translateY(-2px); box-shadow:0 14px 26px -10px rgba(15,23,42,.22), 0 1px 0 rgba(255,255,255,.6) inset; }
+  .oauth-btn:active{ transform:translateY(0); box-shadow:0 2px 6px rgba(15,23,42,.12) inset; }
+  .oauth-btn.discord{ border-color:#5865F226; background:#5865F208; }
+  .oauth-btn.discord:hover{ border-color:#5865F2; background:#5865F211; }
   .oauth-btn.google:hover{ border-color:#94A3B8; }
   .oauth-icon{ width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
   .oauth-btn .oauth-label{ flex:1; text-align:left; }
@@ -76,12 +133,20 @@
     position:relative; padding:56px 44px; display:flex; flex-direction:column; justify-content:center;
     background:linear-gradient(160deg,#1D4ED8 0%,#2563EB 45%,#38BDF8 100%);
     color:#fff; overflow:hidden;
+    box-shadow:inset 8px 0 30px -20px rgba(2,6,23,.5);
   }
   .brand-pane::before{
+    content:''; position:absolute; inset:0; opacity:.55;
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(255,255,255,.16) 0, transparent 40%),
+      radial-gradient(circle at 85% 75%, rgba(255,255,255,.12) 0, transparent 45%);
+  }
+  .brand-pane::after{
     content:''; position:absolute; inset:0; opacity:.5;
     background-image:
-      radial-gradient(circle at 20% 20%, rgba(255,255,255,.14) 0, transparent 40%),
-      radial-gradient(circle at 85% 75%, rgba(255,255,255,.10) 0, transparent 45%);
+      linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+    background-size:28px 28px;
   }
   .brand-watermark{
     position:absolute; top:22px; left:0; right:0; display:flex; gap:18px; overflow:hidden;
@@ -90,16 +155,17 @@
   }
   .brand-logo{
     position:relative; z-index:2; width:44px; height:44px; border-radius:13px;
-    background:rgba(255,255,255,.16); backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,.25);
+    background:rgba(255,255,255,.16); backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,.3);
+    box-shadow:0 10px 24px -8px rgba(2,6,23,.45), inset 0 1px 0 rgba(255,255,255,.4);
     display:flex; align-items:center; justify-content:center; font-size:19px; margin-bottom:26px;
   }
-  .brand-headline{ position:relative; z-index:2; font-size:29px; font-weight:800; line-height:1.28; margin:0 0 14px; letter-spacing:-.01em; text-shadow:0 2px 20px rgba(2,6,23,.2); }
+  .brand-headline{ position:relative; z-index:2; font-size:29px; font-weight:800; line-height:1.28; margin:0 0 14px; letter-spacing:-.01em; text-shadow:0 2px 20px rgba(2,6,23,.25); }
   .brand-body{ position:relative; z-index:2; font-size:13.5px; line-height:1.75; color:#EFF6FF; max-width:300px; }
   .brand-stats{ position:relative; z-index:2; display:flex; gap:26px; margin-top:32px; }
   .brand-stat b{ display:block; font-size:20px; font-weight:800; }
   .brand-stat span{ font-size:10.5px; color:#DBEAFE; letter-spacing:.06em; }
 
-  /* ===== มือถือ: เรียงเป็นแนวตั้ง แผงแบรนด์อยู่บน ===== */
+  /* ===== มือถือ ===== */
   @media (max-width:760px){
     .auth-grid{ grid-template-columns:1fr; }
     .brand-pane{ order:1; padding:38px 28px 46px; min-height:0; }
@@ -110,64 +176,101 @@
     .back-home{ top:16px; left:16px; }
   }
 
-  .foot-note{ text-align:center; margin-top:22px; font-size:11px; color:var(--mist); }
+  .foot-note{ text-align:center; margin-top:22px; font-size:11px; color:rgba(148,163,184,.7); }
+
+  @media (prefers-reduced-motion: reduce){
+    .star, .shooting-star, .auth-shell{ animation:none !important; }
+  }
 </style>
 </head>
 <body>
 
+<div class="bg-mesh"></div>
+<div class="bg-grid"></div>
+<div class="star-field" id="starField"></div>
+
 <a href="/" class="back-home"><i class="fa-solid fa-arrow-left"></i> กลับหน้าแรก</a>
 
-<div>
-  <div class="auth-shell">
-    <div class="auth-grid">
+<div class="stage">
+  <div>
+    <div class="auth-shell">
+      <div class="auth-grid">
 
-      <!-- แผงปุ่ม login จริง -->
-      <div class="action-pane">
-        <div class="action-icon"><i class="fa-solid fa-bolt"></i></div>
-        <h1 class="action-title">เข้าสู่ระบบ Flexozy</h1>
-        <p class="action-sub">ไม่ต้องตั้งรหัสผ่านใหม่ — ใช้บัญชี Discord หรือ Google ที่มีอยู่แล้วเข้าใช้งานได้ทันที ระบบจะสร้างบัญชีให้อัตโนมัติตั้งแต่ครั้งแรกที่ login</p>
+        <!-- แผงปุ่ม login จริง -->
+        <div class="action-pane">
+          <div class="action-icon"><i class="fa-solid fa-bolt"></i></div>
+          <h1 class="action-title">เข้าสู่ระบบ Flexozy</h1>
+          <p class="action-sub">ไม่ต้องตั้งรหัสผ่านใหม่ — ใช้บัญชี Discord หรือ Google ที่มีอยู่แล้วเข้าใช้งานได้ทันที ระบบจะสร้างบัญชีให้อัตโนมัติตั้งแต่ครั้งแรกที่ login</p>
 
-        <a href="/login/discord" class="oauth-btn discord">
-          <span class="oauth-icon">
-            <svg width="22" height="22" viewBox="0 0 127.14 96.36" fill="#5865F2"><path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1,105.25,105.25,0,0,0,32.19-16.14c2.64-27.38-4.51-51.11-19.32-72.15ZM42.6,65.22c-5.17,0-9.46-4.88-9.46-10.84s4.23-10.84,9.46-10.84,9.52,4.88,9.46,10.84C52.06,60.34,47.83,65.22,42.6,65.22Zm42.24,0c-5.17,0-9.46-4.88-9.46-10.84s4.23-10.84,9.46-10.84,9.52,4.88,9.46,10.84C94.3,60.34,90.07,65.22,84.84,65.22Z"/></svg>
-          </span>
-          <span class="oauth-label">เข้าสู่ระบบด้วย Discord</span>
-          <i class="fa-solid fa-arrow-right oauth-arrow"></i>
-        </a>
+          <a href="/login/discord" class="oauth-btn discord">
+            <span class="oauth-icon">
+              <svg width="22" height="22" viewBox="0 0 127.14 96.36" fill="#5865F2"><path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1,105.25,105.25,0,0,0,32.19-16.14c2.64-27.38-4.51-51.11-19.32-72.15ZM42.6,65.22c-5.17,0-9.46-4.88-9.46-10.84s4.23-10.84,9.46-10.84,9.52,4.88,9.46,10.84C52.06,60.34,47.83,65.22,42.6,65.22Zm42.24,0c-5.17,0-9.46-4.88-9.46-10.84s4.23-10.84,9.46-10.84,9.52,4.88,9.46,10.84C94.3,60.34,90.07,65.22,84.84,65.22Z"/></svg>
+            </span>
+            <span class="oauth-label">เข้าสู่ระบบด้วย Discord</span>
+            <i class="fa-solid fa-arrow-right oauth-arrow"></i>
+          </a>
 
-        <a href="/login/google" class="oauth-btn google">
-          <span class="oauth-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-          </span>
-          <span class="oauth-label">เข้าสู่ระบบด้วย Google</span>
-          <i class="fa-solid fa-arrow-right oauth-arrow"></i>
-        </a>
+          <a href="/login/google" class="oauth-btn google">
+            <span class="oauth-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            </span>
+            <span class="oauth-label">เข้าสู่ระบบด้วย Google</span>
+            <i class="fa-solid fa-arrow-right oauth-arrow"></i>
+          </a>
 
-        <p class="link-note">
-          <b>ใช้ Google ครั้งแรก?</b> บัญชีของคุณผูกกับอีเมลเป็นหลัก — ถ้าเพิ่งเคยเข้าเว็บนี้ ให้เข้าสู่ระบบด้วย <b>Discord</b> ก่อนสักครั้ง (ด้วยอีเมลเดียวกับ Google) หลังจากนั้นปุ่ม Google จะเข้าบัญชีเดียวกันได้ทันที
-        </p>
-      </div>
-
-      <!-- แผงแบรนด์ -->
-      <div class="brand-pane">
-        <div class="brand-watermark" id="brandWatermark"></div>
-        <div class="brand-logo"><i class="fa-solid fa-bolt"></i></div>
-        <h2 class="brand-headline">ศูนย์รวมสคริปต์ Roblox<br>ที่เชื่อถือได้</h2>
-        <p class="brand-body">เข้าถึงสคริปต์ที่ทีมงานตรวจสอบแล้ว บันทึกลิงก์ส่วนตัวผ่าน Vault และติดตามสถานะเซิร์ฟเวอร์แบบเรียลไทม์ — ทั้งหมดในที่เดียว</p>
-        <div class="brand-stats">
-          <div class="brand-stat"><b>Roblox ID</b><span>ค้นหาเสียง/ไอเทมได้ทันที</span></div>
-          <div class="brand-stat"><b>Vault</b><span>เก็บโค้ดส่วนตัวอย่างปลอดภัย</span></div>
+          <p class="link-note">
+            <b>ใช้ Google ครั้งแรก?</b> บัญชีของคุณผูกกับอีเมลเป็นหลัก — ถ้าเพิ่งเคยเข้าเว็บนี้ ให้เข้าสู่ระบบด้วย <b>Discord</b> ก่อนสักครั้ง (ด้วยอีเมลเดียวกับ Google) หลังจากนั้นปุ่ม Google จะเข้าบัญชีเดียวกันได้ทันที
+          </p>
         </div>
-      </div>
 
+        <!-- แผงแบรนด์ -->
+        <div class="brand-pane">
+          <div class="brand-watermark" id="brandWatermark"></div>
+          <div class="brand-logo"><i class="fa-solid fa-bolt"></i></div>
+          <h2 class="brand-headline">ศูนย์รวมสคริปต์ Roblox<br>ที่เชื่อถือได้</h2>
+          <p class="brand-body">เข้าถึงสคริปต์ที่ทีมงานตรวจสอบแล้ว บันทึกลิงก์ส่วนตัวผ่าน Vault และติดตามสถานะเซิร์ฟเวอร์แบบเรียลไทม์ — ทั้งหมดในที่เดียว</p>
+          <div class="brand-stats">
+            <div class="brand-stat"><b>Roblox ID</b><span>ค้นหาเสียง/ไอเทมได้ทันที</span></div>
+            <div class="brand-stat"><b>Vault</b><span>เก็บโค้ดส่วนตัวอย่างปลอดภัย</span></div>
+          </div>
+        </div>
+
+      </div>
     </div>
+    <p class="foot-note">© Flexozy — ROBLOX SCRIPT COMMUNITY</p>
   </div>
-  <p class="foot-note">© Flexozy — ROBLOX SCRIPT COMMUNITY</p>
 </div>
 
 <script>
   document.getElementById('brandWatermark').textContent =
     Array.from({length:16}).map(()=>'FLEXOZY').join(' ');
+
+  // ท้องฟ้าดาวระยิบระยับ
+  const field = document.getElementById('starField');
+  for(let i=0;i<90;i++){
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random()*2 + 0.6;
+    s.style.width = size+'px'; s.style.height = size+'px';
+    s.style.left = Math.random()*100+'%';
+    s.style.top = Math.random()*100+'%';
+    s.style.animationDuration = (2 + Math.random()*3)+'s';
+    s.style.animationDelay = (Math.random()*4)+'s';
+    field.appendChild(s);
+  }
+  // ดาวตก
+  const shootSpots = [
+    {x:'85%', y:'8%',  delay:0},
+    {x:'60%', y:'2%',  delay:2.3},
+    {x:'95%', y:'30%', delay:4.6},
+  ];
+  shootSpots.forEach(p=>{
+    const el = document.createElement('div');
+    el.className = 'shooting-star';
+    el.style.left = p.x; el.style.top = p.y;
+    el.style.animationDelay = p.delay+'s';
+    field.appendChild(el);
+  });
 </script>
 </body>
 </html>
