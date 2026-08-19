@@ -1,4 +1,4 @@
-  * { scrollbar-color: #334155 #0B0F19; }
+* { scrollbar-color: #334155 #0B0F19; }
   body { font-family:'IBM Plex Sans Thai',sans-serif; background:#05070D; color:#F1F5F9; -webkit-font-smoothing:antialiased; }
   .eyebrow { font-family:'JetBrains Mono',monospace; letter-spacing:.08em; }
   ::-webkit-scrollbar { width:7px; height:7px; }
@@ -195,15 +195,59 @@
   .tok-const { color:#FDBA74; font-weight:600; }      /* nil/true/false */
   .tok-global { color:#67E8F9; }                      /* game/workspace/script/self ฯลฯ */
 
-.category-card { position:relative; overflow:hidden; border-radius:18px; height:180px; display:flex; align-items:center; padding:22px 24px; background:linear-gradient(120deg,#4F46E5,#818CF8); box-shadow:0 14px 34px -12px rgba(67,56,202,.55); text-decoration:none; border:1px solid rgba(255,255,255,.08); }
-.category-card::before { content:''; position:absolute; inset:0; background-size:cover; background-position:center; opacity:.28; }
-.category-watermark { position:absolute; top:10px; left:0; right:0; display:flex; gap:14px; overflow:hidden; white-space:nowrap; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em; color:rgba(255,255,255,.35); font-weight:700; }
-.category-icon { width:74px; height:74px; border-radius:16px; object-fit:cover; background:rgba(255,255,255,.15); flex-shrink:0; position:relative; z-index:1; box-shadow:0 6px 16px rgba(2,6,23,.25); }
-.category-body { position:relative; z-index:1; margin-left:16px; min-width:0; }
-.category-title { font-size:26px; font-weight:800; color:#fff; line-height:1.1; text-shadow:0 2px 0 rgba(67,56,202,.45), 0 6px 18px rgba(2,6,23,.3); -webkit-text-stroke:.6px rgba(255,255,255,.12); }
-.category-subtitle { font-size:11.5px; color:rgba(255,255,255,.85); font-style:italic; }
-.category-arrow { position:absolute; top:16px; right:18px; z-index:1; color:rgba(255,255,255,.75); font-size:12px; }
-.category-count { position:absolute; bottom:12px; left:24px; z-index:1; font-size:10px; color:rgba(255,255,255,.7); font-family:'JetBrains Mono',monospace; }
+/* การ์ดหมวดหมู่ — สไตล์แบนเนอร์เต็มรูป มุมโค้ง มีป้ายและปุ่มลูกศรลอย (แทนของเดิมที่เป็นบล็อกไล่สีทึบๆ) */
+.category-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  aspect-ratio: 16 / 8.2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 14px 16px;
+  text-decoration: none;
+  border: 1px solid rgba(255,255,255,.08);
+  background-color: #11142a;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 16px 34px -16px rgba(2,6,23,.55);
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+.category-card:hover { transform: translateY(-3px); box-shadow: 0 22px 44px -14px rgba(2,6,23,.6); border-color: rgba(255,255,255,.2); }
+/* การ์ดที่ไม่มีรูป ใช้ไล่สีสลับกันตามลำดับ กันดูจืดซ้ำๆ กันหมด */
+.category-card:not([style*="background-image"]) { background-image: linear-gradient(135deg,#4338CA,#818CF8); }
+.category-card:nth-child(4n+2):not([style*="background-image"]) { background-image: linear-gradient(135deg,#0EA5E9,#38BDF8); }
+.category-card:nth-child(4n+3):not([style*="background-image"]) { background-image: linear-gradient(135deg,#DB2777,#F472B6); }
+.category-card:nth-child(4n+4):not([style*="background-image"]) { background-image: linear-gradient(135deg,#059669,#34D399); }
+.category-card::before {
+  /* เงาไล่ระดับให้ตัวหนังสือ/ป้ายอ่านง่ายบนพื้นรูปภาพ */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(2,6,23,.35) 0%, rgba(2,6,23,0) 32%, rgba(2,6,23,.05) 55%, rgba(2,6,23,.82) 100%);
+  pointer-events: none;
+}
+.category-badge {
+  position: relative; z-index: 1; align-self: flex-start;
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(2,6,23,.55); backdrop-filter: blur(6px);
+  color: #fff; font-size: 10px; font-weight: 700;
+  padding: 5px 10px; border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.18);
+}
+.category-body { position: relative; z-index: 1; min-width: 0; }
+.category-title { font-size: 19px; font-weight: 800; color: #fff; line-height: 1.15; text-shadow: 0 2px 12px rgba(2,6,23,.6); }
+.category-subtitle { font-size: 10.5px; color: rgba(255,255,255,.8); margin-top: 2px; }
+.category-link { position: relative; z-index: 1; font-size: 9.5px; color: rgba(255,255,255,.65); font-family: 'JetBrains Mono',monospace; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+.category-arrow-btn {
+  position: absolute; z-index: 1; bottom: 14px; right: 14px;
+  width: 30px; height: 30px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,.14); backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,.25); color: #fff; font-size: 11px;
+  transition: background .2s ease, transform .2s ease;
+}
+.category-card:hover .category-arrow-btn { background: rgba(255,255,255,.28); transform: translateX(2px); }
 .hero-watermark { font-size:13px !important; letter-spacing:.08em !important; -webkit-text-stroke:.5px rgba(255,255,255,.15); }
 
 /* ป้ายประกาศแบบเลื่อน (ticker) ใต้แถบเมนู — เลื่อนต่อเนื่องไม่มีช่องว่างด้วยสอง track ต่อกัน */
