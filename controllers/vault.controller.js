@@ -190,8 +190,8 @@ function isGameClient(req) {
   return ua.includes("roblox");
 }
 
-// GET /raw/vault/:code — เส้นทางจริงบนเซิร์ฟเวอร์ (ไม่ใช่ #hash) ตอบกลับเป็น text/plain ล้วนๆ
-// ใช้ยิงตรงจาก loadstring(game:HttpGet("...")) ได้เลย เหมือนลิงก์ raw ของ GitHub
+// GET /s/:code — เส้นทางจริงบนเซิร์ฟเวอร์ (ไม่ใช่ #hash) ตอบกลับเป็น text/plain ล้วนๆ
+// ใช้ยิงตรงจาก loadstring(game:HttpGet("...")) ได้เลย เหมือนลิงก์ raw ของ GitHub — ตั้งใจให้สั้น
 // ถ้าลิงก์มีรหัสผ่าน:
 //   - Roblox client (loadstring/HttpGet) -> ข้ามการเช็ครหัสผ่าน รันได้ทันที
 //   - เบราว์เซอร์ปกติ -> ต้องต่อ ?password=รหัสผ่าน ท้าย URL ให้ถูกต้อง ไม่งั้น 401
