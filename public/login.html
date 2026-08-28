@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เข้าสู่ระบบ — Flexozy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  :root{
+    --cyan:#818CF8; --cyan-deep:#4F46E5; --sky:#A5B4FC;
+    --ink:#F1F5F9; --slate:#94A3B8; --mist:#5B6B85;
+    --line:#232B3D; --panel:#0E1120; --canvas:#04050A; --panel-soft:#171B2E; --danger:#F87171;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ height:100%; }
+  body{
+    margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+    font-family:'IBM Plex Sans Thai',sans-serif; color:var(--ink);
+    background:
+      radial-gradient(ellipse 900px 500px at 12% -10%, #1E1B3D 0%, transparent 60%),
+      radial-gradient(ellipse 700px 500px at 105% 110%, #17203A 0%, transparent 55%),
+      var(--canvas);
+    padding:20px; overflow:hidden; position:relative;
+  }
+  *:focus-visible{ outline:2px solid var(--cyan); outline-offset:2px; }
+  @media (prefers-reduced-motion: reduce){ *{ animation-duration:.001ms !important; transition-duration:.001ms !important; } }
+
+  /* ---------- Ambient floating background ---------- */
+  .ambient{ position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+  .ambient span{
+    position:absolute; bottom:-120px; border-radius:50%; opacity:0;
+    background:radial-gradient(circle at 35% 35%, rgba(165,180,252,.9), rgba(79,70,229,.05) 70%);
+    filter:blur(1px);
+    animation:drift linear infinite;
+  }
+  .ambient span.glow{ filter:blur(18px); background:radial-gradient(circle, rgba(129,140,248,.35), transparent 70%); }
+  @keyframes drift{
+    0%{ transform:translateY(0) translateX(0) scale(.9); opacity:0; }
+    8%{ opacity:.55; }
+    50%{ transform:translateY(-52vh) translateX(18px) scale(1.05); }
+    92%{ opacity:.4; }
+    100%{ transform:translateY(-108vh) translateX(-14px) scale(.85); opacity:0; }
+  }
+
+  /* Shooting stars */
+  .shooting-star{
+    position:absolute; top:0; left:0; width:2px; height:2px; border-radius:50%;
+    background:#fff; opacity:0;
+    box-shadow:0 0 6px 1px rgba(255,255,255,.9), 0 0 14px 3px rgba(165,180,252,.5);
+    animation:shoot linear infinite;
+  }
+  .shooting-star::before{
+    content:''; position:absolute; top:50%; right:0; width:110px; height:1px;
+    background:linear-gradient(to left, rgba(255,255,255,.85), rgba(165,180,252,.25) 45%, transparent);
+    transform:translateY(-50%);
+  }
+  @keyframes shoot{
+    0%{ transform:translate(0,0) rotate(215deg); opacity:0; }
+    3%{ opacity:1; }
+    18%{ opacity:1; }
+    26%{ transform:translate(-620px,440px) rotate(215deg); opacity:0; }
+    100%{ opacity:0; }
+  }
+
+  .back-home{
+    position:fixed; top:22px; left:22px; display:flex; align-items:center; gap:8px;
+    font-size:13px; color:var(--slate); text-decoration:none; font-weight:500; z-index:20;
+    padding:9px 18px 9px 15px; border-radius:999px;
+    background:rgba(255,255,255,.05); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+    border:1px solid rgba(255,255,255,.14);
+    box-shadow:0 8px 24px -10px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.08);
+    transition:color .2s ease, transform .2s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease;
+  }
+  .back-home:hover{
+    color:var(--ink); transform:translateX(-3px);
+    border-color:rgba(129,140,248,.5); background:rgba(255,255,255,.09);
+    box-shadow:0 10px 28px -8px rgba(79,70,229,.4), inset 0 1px 0 rgba(255,255,255,.12);
+  }
+  .back-home i{ font-size:11px; transition:transform .2s ease; }
+  .back-home:hover i{ transform:translateX(-2px); }
+
+  /* ---------- Shell ---------- */
+  .auth-shell{
+    position:relative; width:100%; max-width:820px; min-height:520px;
+    background:var(--panel); border-radius:26px; overflow:hidden;
+    box-shadow:0 30px 70px -20px rgba(0,0,0,.6), 0 2px 8px rgba(0,0,0,.3);
+    border:1px solid var(--line);
+  }
+
+  /* ---------- Form panels (both live side by side, overlay slides on top) ---------- */
+  .form-panel{
+    position:absolute; top:0; height:100%; width:50%;
+    display:flex; align-items:center; justify-content:center;
+    transition:transform .9s cubic-bezier(.83,0,.17,1), opacity .7s ease .1s, filter .7s ease;
+    padding:46px 44px;
+  }
+  .form-panel form{ width:100%; max-width:320px; }
+
+  .sign-in-panel{ left:0; z-index:2; }
+  .sign-up-panel{ left:0; z-index:1; opacity:0; filter:blur(4px); }
+
+  .auth-shell.right-active .sign-in-panel{ transform:translateX(100%) scale(.97); opacity:0; filter:blur(4px); z-index:1; transition:transform .9s cubic-bezier(.83,0,.17,1), opacity .5s ease, filter .5s ease; }
+  .auth-shell.right-active .sign-up-panel{ transform:translateX(100%); opacity:1; filter:blur(0); z-index:5; transition:transform .9s cubic-bezier(.83,0,.17,1), opacity .7s ease .25s, filter .7s ease .25s; }
+
+  .panel-title{ font-size:23px; font-weight:800; margin:0 0 4px; letter-spacing:-.01em; }
+  .panel-sub{ font-size:12px; color:var(--slate); line-height:1.6; margin:0 0 20px; }
+
+  .oauth-row{ display:flex; gap:10px; margin-bottom:16px; }
+  .oauth-btn{
+    flex:1; display:flex; align-items:center; justify-content:center; gap:8px; padding:10px 12px; border-radius:12px;
+    border:1.5px solid var(--line); background:var(--panel-soft); cursor:pointer; text-decoration:none;
+    font-family:inherit; font-size:12.5px; font-weight:600; color:var(--ink);
+    transition:border-color .15s ease, transform .15s ease, box-shadow .15s ease;
+  }
+  .oauth-btn:hover{ transform:translateY(-2px); box-shadow:0 10px 22px -8px rgba(0,0,0,.4); border-color:var(--cyan); }
+
+  .divider{ display:flex; align-items:center; gap:10px; margin:14px 0; font-size:11px; color:var(--mist); }
+  .divider::before, .divider::after{ content:''; flex:1; height:1px; background:var(--line); }
+
+  .field{ margin-bottom:12px; }
+  .field label{ display:block; font-size:11px; color:var(--slate); margin-bottom:5px; }
+  .field input{
+    width:100%; background:#0B0F19; border:1px solid var(--line); border-radius:11px; padding:10px 13px;
+    color:var(--ink); font-family:inherit; font-size:13px; transition:border-color .15s ease;
+  }
+  .field input:focus{ outline:none; border-color:var(--cyan); }
+  .field input::placeholder{ color:var(--mist); }
+
+  .submit-btn{
+    width:100%; padding:11px; border-radius:13px; border:none; cursor:pointer;
+    background:linear-gradient(135deg,var(--cyan) 0%,var(--cyan-deep) 100%); color:#fff;
+    font-family:inherit; font-size:13px; font-weight:700; box-shadow:0 4px 16px -4px rgba(99,102,241,.5);
+    transition:box-shadow .15s ease, opacity .15s ease; margin-top:4px;
+  }
+  .submit-btn:hover{ box-shadow:0 6px 22px -4px rgba(99,102,241,.7); }
+  .submit-btn:disabled{ opacity:.55; cursor:not-allowed; }
+
+  .link-note{ font-size:11px; color:var(--mist); margin-top:14px; text-align:center; }
+  .link-note button{ color:var(--cyan); font-weight:600; cursor:pointer; background:none; border:none; font-family:inherit; font-size:inherit; padding:0; }
+  .link-note button:hover{ text-decoration:underline; }
+
+  .form-msg{ font-size:11.5px; border-radius:10px; padding:9px 12px; margin-bottom:12px; display:none; }
+  .form-msg.show{ display:block; }
+  .form-msg.error{ background:#2E1414; color:var(--danger); border:1px solid #4C1D1D; }
+  .form-msg.success{ background:#0C2E42; color:var(--cyan); border:1px solid #3730A3; }
+
+  /* Login / Forgot / Reset sub-views inside the sign-in panel */
+  .auth-view{ display:none; width:100%; }
+  .auth-view.active{ display:block; animation:viewFade .35s ease; }
+  @keyframes viewFade{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:translateY(0); } }
+  .otp-input{ letter-spacing:8px; text-align:center; font-size:20px; font-weight:700; font-family:'JetBrains Mono',monospace; }
+
+  /* ---------- Sliding overlay (brand side) ---------- */
+  .overlay-container{
+    position:absolute; top:0; left:50%; width:50%; height:100%; overflow:hidden;
+    transition:transform .9s cubic-bezier(.83,0,.17,1); z-index:10;
+  }
+  .auth-shell.right-active .overlay-container{ transform:translateX(-100%); }
+
+  .overlay{
+    position:relative; left:-100%; height:100%; width:200%;
+    background:linear-gradient(160deg,#4338CA 0%,#6366F1 45%,#818CF8 100%);
+    color:#fff; transform:translateX(0); transition:transform .9s cubic-bezier(.83,0,.17,1);
+  }
+  .auth-shell.right-active .overlay{ transform:translateX(50%); }
+  .overlay::before{
+    content:''; position:absolute; inset:0; opacity:.5;
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(255,255,255,.14) 0, transparent 40%),
+      radial-gradient(circle at 85% 75%, rgba(255,255,255,.10) 0, transparent 45%);
+  }
+  .overlay-watermark{
+    position:absolute; top:20px; left:0; right:0; display:flex; gap:16px; overflow:hidden;
+    white-space:nowrap; font-size:10px; letter-spacing:.16em; color:rgba(255,255,255,.26);
+    font-weight:700; z-index:1;
+  }
+  .overlay-panel{
+    position:absolute; top:0; width:50%; height:100%;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
+    padding:0 34px; transform:translateX(0); transition:transform .9s cubic-bezier(.83,0,.17,1);
+  }
+  .overlay-left{ transform:translateX(-20%); }
+  .auth-shell.right-active .overlay-left{ transform:translateX(0); }
+  .overlay-right{ right:0; transform:translateX(0); }
+  .auth-shell.right-active .overlay-right{ transform:translateX(20%); }
+
+  .overlay-panel h1{ font-size:21px; font-weight:800; line-height:1.3; margin:0 0 10px; letter-spacing:-.01em; }
+  .overlay-panel p{ font-size:12.5px; line-height:1.7; color:#EEF2FF; margin:0 0 22px; max-width:250px; }
+  .overlay-ghost{
+    padding:10px 26px; border-radius:12px; border:1.5px solid rgba(255,255,255,.55); background:transparent;
+    color:#fff; font-family:inherit; font-size:12.5px; font-weight:700; cursor:pointer;
+    transition:background .15s ease, transform .15s ease;
+  }
+  .overlay-ghost:hover{ background:rgba(255,255,255,.14); transform:translateY(-2px); }
+
+  /* ---------- Mobile: stack, drop the slide, use simple tabs ---------- */
+  @media (max-width:760px){
+    .auth-shell{ min-height:0; border-radius:20px; }
+    .overlay-container{ display:none; }
+    .form-panel{ position:relative; width:100%; padding:30px 22px 34px; transform:none !important; opacity:1 !important; z-index:1 !important; }
+    .sign-up-panel{ display:none; }
+    .auth-shell.right-active .sign-in-panel{ display:none; }
+    .auth-shell.right-active .sign-up-panel{ display:flex; }
+    .mobile-tabs{ display:flex; gap:6px; background:var(--panel-soft); border:1px solid var(--line); border-radius:12px; padding:4px; margin:18px 22px 0; }
+    .mobile-tab-btn{ flex:1; padding:9px 10px; border:none; background:none; color:var(--slate); font-family:inherit; font-size:12.5px; font-weight:600; border-radius:9px; cursor:pointer; }
+    .mobile-tab-btn.active{ background:linear-gradient(135deg,var(--cyan) 0%,var(--cyan-deep) 100%); color:#fff; }
+  }
+  .mobile-tabs{ display:none; }
+  @media (max-width:760px){ .mobile-tabs{ display:flex; } }
+
+  .foot-note{ text-align:center; margin-top:20px; font-size:11px; color:var(--mist); }
+  .hidden{ display:none; }
+</style>
+<script>
+            // ป้องกันการคลิกขวา (Disable Right Click)
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+            });
+
+            // ป้องกันปุ่ม F12 และปุ่มลัดสำหรับตรวจสอบโค้ด (Disable F12, Ctrl+Shift+I, Ctrl+Shift+C, Ctrl+Shift+J, Ctrl+U)
+            document.addEventListener('keydown', function(e) {
+                // F12
+                if (e.key === 'F12' || e.keyCode === 123) {
+                    e.preventDefault();
+                    return false;
+                }
+                // Ctrl+Shift+I (Inspect)
+                if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.keyCode === 73)) {
+                    e.preventDefault();
+                    return false;
+                }
+                // Ctrl+Shift+C (Inspect Element)
+                if (e.ctrlKey && e.shiftKey && (e.key === 'C' || e.keyCode === 67)) {
+                    e.preventDefault();
+                    return false;
+                }
+                // Ctrl+Shift+J (Console)
+                if (e.ctrlKey && e.shiftKey && (e.key === 'J' || e.keyCode === 74)) {
+                    e.preventDefault();
+                    return false;
+                }
+                // Ctrl+U (View Source)
+                if (e.ctrlKey && (e.key === 'U' || e.keyCode === 85)) {
+                    e.preventDefault();
+                    return false;
+                }
+                // Ctrl+S (Save page)
+                if (e.ctrlKey && (e.key === 'S' || e.keyCode === 83)) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        </script>
+</head>
+<body>
+
+<div class="ambient" id="ambient"></div>
+
+<a href="/" class="back-home"><i class="fa-solid fa-arrow-left"></i> กลับหน้าแรก</a>
+
+<div style="width:100%;max-width:820px;">
+  <div class="auth-shell" id="authShell">
+
+    <div class="mobile-tabs">
+      <button type="button" class="mobile-tab-btn active" data-mode="in" onclick="setMobileMode('in')">เข้าสู่ระบบ</button>
+      <button type="button" class="mobile-tab-btn" data-mode="up" onclick="setMobileMode('up')">สมัครสมาชิก</button>
+    </div>
+
+    <!-- Sign In -->
+    <div class="form-panel sign-in-panel">
+
+      <div class="auth-view active" id="authViewLogin">
+        <form id="loginForm" onsubmit="submitLogin(event)">
+          <h1 class="panel-title">เข้าสู่ระบบ</h1>
+          <p class="panel-sub">ใช้บัญชี Discord, Google หรืออีเมลที่มีอยู่แล้ว</p>
+
+          <div class="oauth-row">
+            <a href="/login/discord" class="oauth-btn" aria-label="เข้าสู่ระบบด้วย Discord">
+              <svg width="17" height="17" viewBox="0 0 127.14 96.36" fill="#5865F2"><path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1,105.25,105.25,0,0,0,32.19-16.14c2.64-27.38-4.51-51.11-19.32-72.15ZM42.6,65.22c-5.17,0-9.46-4.88-9.46-10.84s4.23-10.84,9.46-10.84,9.52,4.88,9.46,10.84C52.06,60.34,47.83,65.22,42.6,65.22Zm42.24,0c-5.17,0-9.46-4.88-9.46-10.84s4.23-10.84,9.46-10.84,9.52,4.88,9.46,10.84C94.3,60.34,90.07,65.22,84.84,65.22Z"/></svg>
+              Discord
+            </a>
+            <a href="/login/google" class="oauth-btn" aria-label="เข้าสู่ระบบด้วย Google">
+              <svg width="16" height="16" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+              Google
+            </a>
+          </div>
+
+          <div class="divider">หรือใช้อีเมล</div>
+          <div id="loginMsg" class="form-msg"></div>
+
+          <div class="field"><label>อีเมล</label><input type="email" id="liEmail" required placeholder="you@example.com"></div>
+          <div class="field"><label>รหัสผ่าน</label><input type="password" id="liPassword" required placeholder="********"></div>
+          <button type="submit" class="submit-btn">เข้าสู่ระบบ</button>
+
+          <p class="link-note">ลืมรหัสผ่าน? <button type="button" onclick="switchAuthView('forgot')">กดที่นี่</button></p>
+        </form>
+      </div>
+
+      <div class="auth-view" id="authViewForgot">
+        <h1 class="panel-title">ลืมรหัสผ่าน</h1>
+        <p class="panel-sub">กรอกอีเมลที่ใช้สมัครไว้ ระบบจะส่งรหัส OTP 6 หลักไปให้ทางอีเมล</p>
+        <div id="forgotMsg" class="form-msg"></div>
+        <form onsubmit="submitForgot(event)">
+          <div class="field"><label>อีเมล</label><input type="email" id="fpEmail" required placeholder="you@example.com"></div>
+          <button type="submit" id="forgotBtn" class="submit-btn">ส่งรหัส OTP</button>
+        </form>
+        <p class="link-note"><button type="button" onclick="switchAuthView('login')">กลับไปหน้าเข้าสู่ระบบ</button></p>
+      </div>
+
+      <div class="auth-view" id="authViewReset">
+        <h1 class="panel-title">ตั้งรหัสผ่านใหม่</h1>
+        <p class="panel-sub">กรอกรหัส OTP ที่ได้รับทางอีเมล พร้อมตั้งรหัสผ่านใหม่ (หมดอายุใน 10 นาที)</p>
+        <div id="resetMsg" class="form-msg"></div>
+        <form onsubmit="submitReset(event)">
+          <div class="field"><label>รหัส OTP</label><input type="text" id="rsOtp" required maxlength="6" inputmode="numeric" placeholder="000000" class="otp-input"></div>
+          <div class="field"><label>รหัสผ่านใหม่ (อย่างน้อย 8 ตัว)</label><input type="password" id="rsPassword" required minlength="8" placeholder="********"></div>
+          <button type="submit" class="submit-btn">ยืนยันเปลี่ยนรหัสผ่าน</button>
+        </form>
+        <p class="link-note">ไม่ได้รับรหัส? <button type="button" onclick="switchAuthView('forgot')">ส่งอีกครั้ง</button></p>
+      </div>
+
+    </div>
+
+    <!-- Sign Up -->
+    <div class="form-panel sign-up-panel">
+      <form id="registerForm" onsubmit="submitRegister(event)">
+        <h1 class="panel-title">สร้างบัญชี</h1>
+        <p class="panel-sub">สมัครใหม่ด้วยอีเมล หรือใช้ Discord/Google</p>
+
+        <div class="oauth-row">
+          <a href="/login/discord" class="oauth-btn" aria-label="สมัครด้วย Discord">
+            <svg width="17" height="17" viewBox="0 0 127.14 96.36" fill="#5865F2"><path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1,105.25,105.25,0,0,0,32.19-16.14c2.64-27.38-4.51-51.11-19.32-72.15ZM42.6,65.22c-5.17,0-9.46-4.88-9.46-10.84s4.23-10.84,9.46-10.84,9.52,4.88,9.46,10.84C52.06,60.34,47.83,65.22,42.6,65.22Zm42.24,0c-5.17,0-9.46-4.88-9.46-10.84s4.23-10.84,9.46-10.84,9.52,4.88,9.46,10.84C94.3,60.34,90.07,65.22,84.84,65.22Z"/></svg>
+            Discord
+          </a>
+          <a href="/login/google" class="oauth-btn" aria-label="สมัครด้วย Google">
+            <svg width="16" height="16" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            Google
+          </a>
+        </div>
+
+        <div class="divider">หรือใช้อีเมล</div>
+        <div id="registerMsg" class="form-msg"></div>
+
+        <div class="field"><label>ชื่อผู้ใช้</label><input type="text" id="reUsername" required minlength="3" maxlength="20" placeholder="เช่น flexozy_user"></div>
+        <div class="field"><label>อีเมล</label><input type="email" id="reEmail" required placeholder="you@example.com"></div>
+        <div class="field"><label>รหัสผ่าน (อย่างน้อย 8 ตัว)</label><input type="password" id="rePassword" required minlength="8" placeholder="********"></div>
+        <button type="submit" class="submit-btn">สมัครสมาชิก</button>
+      </form>
+    </div>
+
+    <!-- Sliding brand overlay -->
+    <div class="overlay-container">
+      <div class="overlay">
+        <div class="overlay-watermark" id="brandWatermark"></div>
+        <div class="overlay-panel overlay-left">
+          <h1>มีบัญชีอยู่แล้วใช่ไหม?</h1>
+          <p>เข้าสู่ระบบเพื่อเข้าถึงสคริปต์ที่ตรวจสอบแล้ว, Vault ส่วนตัว และสถานะเซิร์ฟเวอร์แบบเรียลไทม์</p>
+          <button type="button" class="overlay-ghost" onclick="setDesktopMode('in')">เข้าสู่ระบบ</button>
+        </div>
+        <div class="overlay-panel overlay-right">
+          <h1>ยังไม่มีบัญชีใช่ไหม?</h1>
+          <p>สมัครสมาชิกฟรีในไม่กี่วินาที แล้วเริ่มใช้งานศูนย์รวมสคริปต์ Roblox ที่เชื่อถือได้</p>
+          <button type="button" class="overlay-ghost" onclick="setDesktopMode('up')">สมัครสมาชิก</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <p class="foot-note">© Flexozy — ROBLOX SCRIPT COMMUNITY</p>
+</div>
+
+<script>
+document.getElementById('brandWatermark').textContent = Array.from({length:16}).map(()=>'FLEXOZY').join(' ');
+
+(function buildAmbient(){
+  const wrap = document.getElementById('ambient');
+  const count = window.innerWidth < 600 ? 12 : 20;
+  for(let i=0;i<count;i++){
+    const s = document.createElement('span');
+    const isGlow = i % 4 === 0;
+    const size = isGlow ? (60 + Math.random()*90) : (3 + Math.random()*7);
+    const left = Math.random()*100;
+    const duration = 22 + Math.random()*26;
+    const delay = -Math.random()*duration;
+    if(isGlow) s.classList.add('glow');
+    s.style.width = size+'px';
+    s.style.height = size+'px';
+    s.style.left = left+'%';
+    s.style.animationDuration = duration+'s';
+    s.style.animationDelay = delay+'s';
+    wrap.appendChild(s);
+  }
+
+  const starCount = window.innerWidth < 600 ? 3 : 5;
+  for(let i=0;i<starCount;i++){
+    const star = document.createElement('span');
+    star.className = 'shooting-star';
+    const top = Math.random()*55;
+    const left = 20 + Math.random()*70;
+    const duration = 7 + Math.random()*6;
+    const delay = -Math.random()*duration + Math.random()*10;
+    star.style.top = top+'%';
+    star.style.left = left+'%';
+    star.style.animationDuration = duration+'s';
+    star.style.animationDelay = delay+'s';
+    wrap.appendChild(star);
+  }
+})();
+
+const shell = document.getElementById('authShell');
+
+function setDesktopMode(mode){
+  shell.classList.toggle('right-active', mode === 'up');
+  syncMobileTabs(mode === 'up' ? 'up' : 'in');
+}
+function setMobileMode(mode){
+  shell.classList.toggle('right-active', mode === 'up');
+  syncMobileTabs(mode);
+}
+function syncMobileTabs(mode){
+  document.querySelectorAll('.mobile-tab-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+}
+
+let resetEmail = '';
+
+function switchAuthView(view){
+  document.querySelectorAll('.auth-view').forEach(v => v.classList.remove('active'));
+  document.getElementById('authView' + view.charAt(0).toUpperCase() + view.slice(1)).classList.add('active');
+}
+
+function showMsg(id, type, text){
+  const el = document.getElementById(id);
+  el.className = 'form-msg show ' + type;
+  el.textContent = text;
+}
+function hideMsg(id){ document.getElementById(id).className = 'form-msg'; }
+
+async function submitLogin(e){
+  e.preventDefault();
+  const btn = e.target.querySelector('button[type="submit"]');
+  btn.disabled = true; hideMsg('loginMsg');
+  try{
+    const res = await fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      email: document.getElementById('liEmail').value, password: document.getElementById('liPassword').value
+    })});
+    const data = await res.json();
+    if (!res.ok) { showMsg('loginMsg','error', data.message || 'เข้าสู่ระบบไม่สำเร็จ'); btn.disabled=false; return; }
+    window.location.href = '/';
+  }catch(err){ showMsg('loginMsg','error','เกิดข้อผิดพลาด กรุณาลองใหม่'); btn.disabled=false; }
+}
+
+async function submitRegister(e){
+  e.preventDefault();
+  const btn = e.target.querySelector('button[type="submit"]');
+  btn.disabled = true; hideMsg('registerMsg');
+  try{
+    const res = await fetch('/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      username: document.getElementById('reUsername').value,
+      email: document.getElementById('reEmail').value,
+      password: document.getElementById('rePassword').value
+    })});
+    const data = await res.json();
+    if (!res.ok) { showMsg('registerMsg','error', data.message || 'สมัครสมาชิกไม่สำเร็จ'); btn.disabled=false; return; }
+    window.location.href = '/';
+  }catch(err){ showMsg('registerMsg','error','เกิดข้อผิดพลาด กรุณาลองใหม่'); btn.disabled=false; }
+}
+
+async function submitForgot(e){
+  e.preventDefault();
+  const btn = document.getElementById('forgotBtn');
+  btn.disabled = true; btn.textContent = 'กำลังส่ง...'; hideMsg('forgotMsg');
+  resetEmail = document.getElementById('fpEmail').value;
+  try{
+    const res = await fetch('/api/auth/forgot-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:resetEmail})});
+    const data = await res.json();
+    if (!res.ok) { showMsg('forgotMsg','error', data.message || 'ส่งไม่สำเร็จ'); btn.disabled=false; btn.textContent='ส่งรหัส OTP'; return; }
+    switchAuthView('reset');
+  }catch(err){ showMsg('forgotMsg','error','เกิดข้อผิดพลาด กรุณาลองใหม่'); }
+  btn.disabled = false; btn.textContent = 'ส่งรหัส OTP';
+}
+
+async function submitReset(e){
+  e.preventDefault();
+  const btn = e.target.querySelector('button[type="submit"]');
+  btn.disabled = true; hideMsg('resetMsg');
+  try{
+    const res = await fetch('/api/auth/reset-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      email: resetEmail, otp: document.getElementById('rsOtp').value, new_password: document.getElementById('rsPassword').value
+    })});
+    const data = await res.json();
+    if (!res.ok) { showMsg('resetMsg','error', data.message || 'เปลี่ยนรหัสผ่านไม่สำเร็จ'); btn.disabled=false; return; }
+    showMsg('resetMsg','success','เปลี่ยนรหัสผ่านสำเร็จ! กำลังพาไปหน้าเข้าสู่ระบบ...');
+    setTimeout(()=>{ switchAuthView('login'); setDesktopMode('in'); }, 1600);
+  }catch(err){ showMsg('resetMsg','error','เกิดข้อผิดพลาด กรุณาลองใหม่'); }
+  btn.disabled = false;
+}
+</script>
+</body>
+</html>
