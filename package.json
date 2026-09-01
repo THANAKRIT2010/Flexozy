@@ -1,0 +1,17 @@
+{
+  "name": "flexozy-site-builder",
+  "version": "3.0.0",
+  "description": "ระบบให้ผู้ใช้สร้างเว็บ HTML ของตัวเองและตั้งชื่อ เข้าดูได้ที่ flexozy.xyz/#ชื่อ (Vercel + Upstash Redis)",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "^15.1.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "@upstash/redis": "^1.34.3"
+  }
+}
