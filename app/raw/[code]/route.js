@@ -6,7 +6,7 @@ export async function GET(req, { params }){
   const { code } = await params, v = await getVault(code);
   if(!v) return new Response('-- [Flexozy] not found', T(404));
   // API สำหรับ executor เท่านั้น — เปิดจากเบราว์เซอร์จะไม่เห็นโค้ดจริง (ลิงก์ที่มีรหัสผ่านก็ทำงานบน executor ได้ทันที ไม่ต้องใส่รหัสใน URL)
-  if(isBrowser(req)) return new Response('-- [Flexozy] This link can only be executed in-game via loadstring.', T(403));
+  if(isBrowser(req)) return new Response('404', T(403));
   v.views = (v.views||0)+1; await saveVault(v);
   return new Response(tracker(await origin(), code) + v.script, T(200));
 }
