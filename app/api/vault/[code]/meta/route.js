@@ -1,8 +1,0 @@
-import { NextResponse } from 'next/server';
-import { getVault } from '@/lib/db';
-import { origin, rawUrl } from '@/lib/vault';
-export async function GET(_, { params }){
-  const { code } = await params, v = await getVault(code);
-  if(!v) return NextResponse.json({error:'not_found'},{status:404});
-  return NextResponse.json({ code, title:v.title, views:v.views, has_password:!!v.hash, raw_url:rawUrl(await origin(), code) });
-}
