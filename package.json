@@ -1,0 +1,21 @@
+{
+ "name": "flexozy-next",
+ "version": "1.0.0",
+ "private": true,
+ "scripts": {
+  "dev": "next dev",
+  "build": "next build",
+  "start": "next start",
+  "build:lua": "node scripts/build-lua.mjs"
+ },
+ "dependencies": {
+  "next": "^15.0.0",
+  "react": "^19.0.0",
+  "react-dom": "^19.0.0",
+  "highlight.js": "^11.11.1",
+  "@vercel/kv": "^3.0.0"
+ },
+ "engines": {
+  "node": ">=20"
+ }
+}
