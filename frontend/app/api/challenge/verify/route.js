@@ -2,7 +2,7 @@ import { forbidden } from '@/lib/bots';
 import { checkChallenge, makePass, passCookie, POW_ZEROS, POW_ZEROS_HARD } from '@/lib/pass';
 import { turnstileConfigured, siteverify } from '@/lib/turnstileCore';
 import { SecretError } from '@/lib/secret';
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 const ip = (req) => (req.headers.get('x-real-ip') || (req.headers.get('x-forwarded-for')||'').split(',').pop() || '').trim();
 // รับคำตอบจากหน้าตรวจสอบความปลอดภัย → ออก cookie fx_pass (ผิดทุกกรณีตอบ 403 เหมือนกัน)
