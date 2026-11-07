@@ -1,0 +1,26 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "flexozy_web": {
+      "root": "frontend/",
+      "framework": "nextjs",
+      "bindings": [
+        {
+          "type": "service",
+          "service": "flexozy_vm",
+          "format": "url",
+          "env": "FLEXOZY_VM_SERVICE_URL"
+        }
+      ]
+    },
+    "flexozy_vm": {
+      "root": "compiler/"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": { "service": "flexozy_web" }
+    }
+  ]
+}
