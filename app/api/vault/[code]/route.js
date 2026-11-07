@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { getVault, deleteVault } from '@/lib/db';
 import { getUser } from '@/lib/session';
 import { updateVault } from '@/lib/create';
-export const maxDuration = 120;
 export const dynamic = 'force-dynamic';
 const NS = { 'cache-control':'no-store, private' };
 // เจ้าของลิงก์หรือแอดมินเท่านั้น (ไม่ใช่เจ้าของ = 404 เหมือนไม่มีลิงก์)
@@ -17,7 +16,7 @@ async function owned(params){
 // ดึงข้อมูลไปหน้าแก้ไข (โค้ด + ชื่อ + สถานะรหัสผ่านเท่านั้น — ไม่ส่ง hash/salt)
 export async function GET(_, { params }){
   const o = await owned(params); if(o.res) return o.res;
-  return NextResponse.json({ code:o.v.code, title:o.v.title, script:o.v.source_script ?? o.v.script, has_password:!!o.v.hash, needs_key:!!o.v.needs_key }, { headers:NS });
+  return NextResponse.json({ code:o.v.code, title:o.v.title, script:o.v.script, has_password:!!o.v.hash, needs_key:!!o.v.needs_key }, { headers:NS });
 }
 // PATCH { title?, script?, password? ('' = ลบ) , needs_key? (แอดมินเท่านั้น) }
 export async function PATCH(req, { params }){

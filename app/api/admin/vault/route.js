@@ -4,7 +4,6 @@ import { getUser } from '@/lib/session';
 import { origin } from '@/lib/vault';
 import { allApiHosts } from '@/lib/net';
 import { createVault, publicRow } from '@/lib/create';
-export const maxDuration = 120;
 export const dynamic='force-dynamic';
 const guard = async () => { const u = await getUser(); return u?.is_admin ? u : null };
 const deny = () => NextResponse.json({error:'not_found'},{status:404});

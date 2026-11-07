@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { getVault, saveVault, deleteVault } from '@/lib/db';
-export const maxDuration = 120;
 export const dynamic='force-dynamic';
 import { getUser } from '@/lib/session';
 import { updateVault } from '@/lib/create';

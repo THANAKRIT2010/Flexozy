@@ -3,7 +3,6 @@ import { listVaults } from '@/lib/db';
 import { getUser } from '@/lib/session';
 import { origin } from '@/lib/vault';
 import { createVault, publicRow } from '@/lib/create';
-export const maxDuration = 120;
 export const dynamic='force-dynamic';
 // สำหรับผู้ใช้ทั่วไป: โค้ดลิงก์สุ่มเท่านั้น (ไม่รับ slug)
 export async function POST(req){
