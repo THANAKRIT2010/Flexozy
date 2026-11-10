@@ -3,6 +3,7 @@ import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import LinkForm, { ls, copyText } from '@/components/LinkForm';
 import { Avatar, Modal, ProfileModal, PlayersList } from '@/components/Ui';
 import EditLink from '@/components/EditLink';
+import TopupCard from '@/components/TopupCard';
 import Icon from '@/components/Icons';
 import { Spark, AreaChart, fmt, dlabel } from '@/components/Charts';
 
@@ -10,7 +11,7 @@ const VIEWS = {
   overview:{ t:'ภาพรวม', s:'ยอดรันสคริปต์ ลิงก์ที่สร้าง และ TOKEN ที่ใช้ ในช่วงเวลาที่เลือก', i:'chart' },
   create:{ t:'ฝากลิงก์ใหม่', s:'วางโค้ด Lua แล้วแปลงเป็นลิงก์ส่วนตัว พร้อมล็อกรหัสผ่านได้', i:'plus' },
   links:{ t:'ลิงก์ของฉัน', s:'คัดลอก loadstring แก้ไข ดูผู้เล่น และลบลิงก์ที่ฝากไว้', i:'link' },
-  tokens:{ t:'TOKEN', s:'ยอดคงเหลือและกติกาการใช้ TOKEN ของบัญชีนี้', i:'bolt' },
+  tokens:{ t:'TOKEN & เติมเงิน', s:'เติม TOKEN ด้วยซอง TrueMoney ดูยอดคงเหลือและกติกาการใช้', i:'bolt' },
 };
 const NAV = [[null, ['overview']], ['สคริปต์', ['create', 'links']], ['บัญชี', ['tokens']]];
 const SER = [{ key:'r', name:'ยอดรัน', color:'#a78bfa' }, { key:'l', name:'ลิงก์ใหม่', color:'#f0abfc' }, { key:'k', name:'ล็อกรหัส', color:'#67e8f9' }];
@@ -121,7 +122,7 @@ export default function Dashboard({ site }){
               <div className="dz-ra"><button className="dz-btn" onClick={() => copy(ls(v.raw_url), v.code)}>{cp === v.code ? 'คัดลอกแล้ว ✓' : 'Loadstring'}</button><a className="dz-btn" href={v.raw_url} target="_blank" rel="noreferrer">Raw</a>
                 <button className="dz-btn" onClick={() => setEd(v.code)}>แก้ไข</button><button className="dz-btn" onClick={() => setPl(v.code)}>ผู้เล่น</button><a className="dz-btn" href={`/vault/${v.code}`}>ดูโค้ด</a><button className="dz-btn dng" onClick={() => del(v.code)}>ลบ</button></div></div>)}</div>}</>}
 
-        {view === 'tokens' && <div className="dz-tokens">
+        {view === 'tokens' && <div className="dz-tokens"><div style={{ gridColumn:'1/-1' }}><TopupCard onDone={reload}/></div>
           <div className="dz-card dz-bal"><div className="dz-card-h"><span>ยอดคงเหลือ</span><i><Icon n="bolt" size={15}/></i></div><b>{tok === null || tok === undefined ? '–' : tok.toLocaleString()}</b><small>TOKEN</small>
             <div className="dz-card-f"><b>{tok == null ? '–' : Math.floor(tok / cost)}</b> ลิงก์ล็อกรหัสที่ฝากได้อีก</div></div>
           <div className="dz-card"><h3>กติกา</h3><ul className="dz-rules"><li><Icon n="check" size={15}/>บัญชีใหม่ได้ <b>10,000</b> TOKEN เมื่อเข้าใช้งานครั้งแรก</li>

@@ -4,10 +4,11 @@ import { usePathname } from 'next/navigation';
 // อนิเมชันเปลี่ยนหน้า: แถบโปรเกรสบน + ฉากโหลดโลโก้หมุน (โผล่เมื่อรอเกิน ~0.12 วิ) + การ์ดเอียง 3D ตามเมาส์ + เด้งเข้าตอนสลับแท็บในแดชบอร์ด
 const SKIP = /^\/(raw|loader|stage|game-script|bootstrap|ping|api)/;
 export default function RouteFx(){
-  const path = usePathname(), [on, setOn] = useState(false), t = useRef();
-  useEffect(() => { clearTimeout(t.current); setOn(false); }, [path]);
+  const path = usePathname(), [on, setOn] = useState(false), t = useRef(), bar = useRef(), st = useRef({ v:0, i:0 });
+  const fin = () => { const b = bar.current; if(!b) return; clearInterval(st.current.i); b.style.transition = 'transform .2s'; b.style.transform = 'scaleX(1)'; setTimeout(() => { b.style.transition = 'opacity .35s'; b.style.opacity = '0'; }, 220); };
+  useEffect(() => { clearTimeout(t.current); setOn(false); fin(); }, [path]);
   useEffect(() => {
-    const go = () => { setOn(true); clearTimeout(t.current); t.current = setTimeout(() => setOn(false), 9000); };
+    const go = () => { const b = bar.current, S = st.current; if(b){ S.v = 8; b.style.transition = 'none'; b.style.opacity = '1'; b.style.transform = 'scaleX(.08)'; void b.offsetWidth; clearInterval(S.i); S.i = setInterval(() => { S.v += (92 - S.v) * .09; b.style.transition = 'transform .25s ease-out'; b.style.transform = `scaleX(${S.v / 100})`; }, 200); } setOn(true); clearTimeout(t.current); t.current = setTimeout(() => setOn(false), 9000); };
     const click = (e) => { const a = e.target.closest?.('a[href]');
       if(!a || e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || a.target === '_blank' || a.hasAttribute('download')) return;
       const u = new URL(a.href, location.href);
@@ -23,6 +24,6 @@ export default function RouteFx(){
     document.addEventListener('click', click); addEventListener('pageshow', show); document.addEventListener('pointermove', mv, { passive:true }); document.addEventListener('pointerout', out); addEventListener('hashchange', hash);
     return () => { document.removeEventListener('click', click); removeEventListener('pageshow', show); document.removeEventListener('pointermove', mv); document.removeEventListener('pointerout', out); removeEventListener('hashchange', hash); };
   }, []);
-  return (<div className={'rx' + (on ? ' on' : '')} aria-hidden={!on} role="status"><i className="rx-bar"/>
-    <div className="rx-core"><div className="rx-orb"><span/><span/><img src="/images/flexozy-logo.png" alt=""/></div><b>กำลังโหลด<em>.</em><em>.</em><em>.</em></b></div></div>);
+  return (<><i className="rx-bar" ref={bar}/><div className={'rx' + (on ? ' on' : '')} aria-hidden={!on} role="status">
+    <div className="rx-core"><div className="rx-orb"><span/><span/><img src="/images/flexozy-logo.png" alt=""/></div><b>กำลังโหลด<em>.</em><em>.</em><em>.</em></b></div></div></>);
 }
