@@ -17,6 +17,6 @@ export const POST = safe(async (req, { params }) => {
   // แอดมิน (หลังบ้าน) ดูโค้ดได้เลยโดยไม่ต้องใส่รหัสผ่านของลิงก์
   const adm = v.hash ? await getUser() : null;
   if(!adm?.is_admin && !checkPw(v, password)) return NextResponse.json({error:'wrong_password'},{status:401});
-  await incrViews(code);
+  await incrViews(code, v.owner_id);
   return NextResponse.json({ title:v.title, script:v.script });
 });

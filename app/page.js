@@ -1,9 +1,9 @@
-import Home from '@/components/Home';
+import Dashboard from '@/components/Dashboard';
 import { publicSite, DEFAULT_SITE } from '@/lib/site';
 export const dynamic = 'force-dynamic';
-// หน้าแรก: เรนเดอร์ฝั่งเซิร์ฟเวอร์ — ข้อความ/ตัวเลขสถิติมาจากหลังบ้าน (/admin/appearance); ถ้าอ่านค่าไม่ได้จะซ่อนช่องสถิติ ไม่ทำให้หน้าล่ม
+// หน้าแรก = แดชบอร์ด: ผู้ใช้ที่ล็อกอินเห็นภาพรวม/สร้างลิงก์/ลิงก์ของฉัน/TOKEN · ผู้เยี่ยมชมเห็นหน้าแนะนำ + ปุ่มเข้าสู่ระบบ (ค่าสถิติ/ข้อความมาจาก /admin/appearance)
 export default async function Page(){
   let site; try{ const s = await publicSite(); site = { hero:s.cfg.hero, countMs:s.cfg.countMs, stats:s.stats }; }
   catch{ site = { hero:DEFAULT_SITE.hero, countMs:DEFAULT_SITE.countMs, stats:[] }; }
-  return <Home site={site}/>;
+  return <Dashboard site={site}/>;
 }

@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { failover, ls } from '@/lib/snippets';
 import { api, send, useCopy, Panel, Pill, Empty, Result, fmtDate } from './kit';
-const EV = { dump_suspect:['bad', 'สงสัยว่า dump loader'], token_ip_mismatch:['warn', 'token ถูกใช้จาก IP อื่น'], token_replay:['warn', 'ใช้ token ซ้ำ'] };
+const EV = { admin_ban:['bad', 'แอดมินแบน IP'], admin_unban:['ok', 'แอดมินปลดบล็อก IP'], auto_ban:['bad', 'ระบบแบนอัตโนมัติ'], dump_suspect:['bad', 'สงสัยว่า dump loader'], token_ip_mismatch:['warn', 'token ถูกใช้จาก IP อื่น'], token_replay:['warn', 'ใช้ token ซ้ำ'] };
 
 // ===== เครื่องมือทดสอบระบบกัน dump — ยิงของจริงทั้งหมด =====
 function Lab(){
@@ -33,6 +33,31 @@ function Lab(){
   </div>);
 }
 
+// ===== แบน / ปลดบล็อก IP =====
+const DUR = [[1, '1 ชั่วโมง'], [24, '24 ชั่วโมง'], [168, '7 วัน'], [720, '30 วัน'], [0, 'ถาวร']];
+function Bans(){
+  const [list, setList] = useState(null), [f, setF] = useState({ ip:'', hours:24, reason:'' }), [msg, setMsg] = useState(null), [busy, setBusy] = useState(false);
+  const load = () => api('/api/admin/bans').then(r => setList(r.data?.bans || []));
+  useEffect(() => { load(); }, []);
+  async function ban(){
+    setBusy(true); setMsg(null); const r = await send('/api/admin/bans', { ip:f.ip.trim(), hours:Number(f.hours), reason:f.reason });
+    setBusy(false); if(r.ok){ setF({ ip:'', hours:f.hours, reason:'' }); setMsg({ ok:true, t:'แบนแล้ว มีผลกับสคริปต์ทุกเส้นทางทันที' }); load(); } else setMsg({ ok:false, t:r.data?.error === 'bad_ip' ? 'รูปแบบ IP ไม่ถูกต้อง (ตัวอย่าง 203.0.113.9)' : 'แบนไม่สำเร็จ' });
+  }
+  async function unban(ip){ if(!confirm('ปลดบล็อก ' + ip + ' ?')) return; await send('/api/admin/bans', { ip }, 'DELETE'); load(); }
+  return (<Panel title="แบน / ปลดบล็อก IP" sub="บล็อกการเข้าถึงสคริปต์ (/loader /raw /stage /auth) ของ IP นั้นทันที · หน้าเว็บและหลังบ้านไม่ถูกบล็อก">
+    <div className="two" style={{ gap:8, flexWrap:'wrap' }}>
+      <input value={f.ip} onChange={e => setF({ ...f, ip:e.target.value })} placeholder="IP เช่น 203.0.113.9" spellCheck={false} style={{ minWidth:180 }}/>
+      <select value={f.hours} onChange={e => setF({ ...f, hours:e.target.value })}>{DUR.map(([h, t]) => <option key={h} value={h}>{t}</option>)}</select>
+      <input value={f.reason} onChange={e => setF({ ...f, reason:e.target.value })} placeholder="เหตุผล (ไม่บังคับ)" maxLength={120}/>
+      <button className="btn sm danger" disabled={busy || !f.ip.trim()} onClick={ban}>แบน IP</button></div>
+    {msg && <div className={'note ' + (msg.ok ? '' : 'bad')} style={{ marginTop:10 }}>{msg.t}</div>}
+    {!list ? <Empty>กำลังโหลด…</Empty> : !list.length ? <Empty>ยังไม่มี IP ที่ถูกแบน</Empty> :
+      <div className="ad-tw short" style={{ marginTop:12 }}><table><thead><tr><th>IP</th><th>ที่มา</th><th>เหตุผล</th><th>แบนเมื่อ</th><th>หมดอายุ</th><th/></tr></thead>
+        <tbody>{list.map(b => <tr key={b.ip}><td className="s">{b.ip}</td><td><Pill tone={b.auto ? 'warn' : 'bad'}>{b.auto ? 'อัตโนมัติ' : 'แอดมิน'}</Pill>{!b.auto && b.by && <small className="dim"> {b.by}</small>}</td><td>{b.reason || '—'}</td><td>{fmtDate(b.ts)}</td><td>{b.exp ? fmtDate(b.exp) : 'ถาวร'}</td>
+          <td><button className="btn sm" onClick={() => unban(b.ip)}>ปลดบล็อก</button></td></tr>)}</tbody></table></div>}
+  </Panel>);
+}
+
 export default function SettingsPage(){
   const [s, setS] = useState(null), [sec, setSec] = useState(null), [cp, copy] = useCopy();
   useEffect(() => { api('/api/admin/status').then(r => setS(r.data)); api('/api/admin/security').then(r => setSec(r.data)); }, []);
@@ -48,6 +73,7 @@ export default function SettingsPage(){
         <div className="note" style={{ marginTop:14 }}>ข้อจำกัดที่ต้องรู้: URL ที่ส่งโค้ดรันได้ ไม่มีทางกันการอ่านได้ 100% — ชั้นเหล่านี้ทำให้ dump แล้ว <b>ได้ข้อมูลที่ใช้ต่อไม่ได้</b> (ซีล + token ผูก IP ใช้ครั้งเดียว) และทำให้ดึงซ้ำ ๆ ถูกแบน ส่วนของที่ต้องปกป้องจริงคือสคริปต์แมพ ซึ่งซ่อนไว้หลัง key + HWID</div>
       </Panel>
     </div>
+    <Bans/>
     <Panel title="เครื่องมือทดสอบระบบกัน dump" sub="ทุกปุ่มทำงานกับระบบจริง"><Lab/></Panel>
     <div className="ad-grid ad-g2e">
       <Panel title="เหตุการณ์ความปลอดภัย" sub={`24 ชม.ล่าสุด: ${Object.entries(counts).map(([k, v]) => `${(EV[k] || [, k])[1]} ${v}`).join(' · ') || 'ไม่มี'}`}>

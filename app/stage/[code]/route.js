@@ -1,4 +1,4 @@
-import { getVault, incrViews, claimNonce } from '@/lib/db';
+import { getVaultFast, incrViews, claimNonce } from '@/lib/db';
 import { uaBind, strike } from '@/lib/guard';
 import { denied, readToken, stageProofOk, xorB64, needsKey, EXEC_HEADERS } from '@/lib/vault';
 import { readKeyToken, keyStillValid } from '@/lib/keys';
@@ -18,11 +18,11 @@ export const GET = safe(async (req, { params }) => {
   const nonce = kt ? kt.nonce : readToken(code, t, ip, uaBind(req));
   if(!nonce){ if(!isKey) await strike(req, 'token_ip_mismatch', `stage/${code}: token ไม่ถูกต้อง/หมดอายุ/มาจาก IP-UA อื่น`); return NF(); }
   if(!kt && !stageProofOk(nonce, sp.get('p'))){ await strike(req, 'stage_no_proof', `stage/${code}: ไม่มีผลพิสูจน์การรัน Lua`); return NF(); }
-  const v = await getVault(code); if(!v) return NF();
+  const v = await getVaultFast(code); if(!v) return NF();
   if(needsKey(v) && !kt) return NF(); // token แบบไม่มี key ใช้กับลิงก์ที่ต้องใช้ key ไม่ได้
   if(kt && !await keyStillValid(kt.kid, 'v:'+code)) return NF();
   if(!await claimNonce(nonce)){ if(!kt) await strike(req, 'token_replay', `stage/${code}: ใช้ token ซ้ำ`); return NF(); }
   if(!kt) await noteRawRedeemed(req);
-  await incrViews(code);
+  await incrViews(code, v.owner_id);
   return new Response(xorB64(v.script, nonce), { status:200, headers:EXEC_HEADERS });
 });

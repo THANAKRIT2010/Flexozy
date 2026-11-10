@@ -1,4 +1,4 @@
-import { getVault, saveVault, incrViews } from '@/lib/db';
+import { getVaultFast, incrViews } from '@/lib/db';
 import { denied, tracker, origin, staged, stagedStub, needsKey, keyedStub, EXEC_HEADERS } from '@/lib/vault';
 import { safe } from '@/lib/http';
 import { forbidden } from '@/lib/bots';
@@ -12,7 +12,7 @@ export const GET = safe(async (req, { params }) => {
   const limited = await protectLoaderRequest(req, '/raw'); if(limited) return limited; // แบน IP / จำกัดความถี่ (ระบบเดียวกับ /loader)
   const { code } = await params;
   if(!/^[A-Za-z0-9][A-Za-z0-9_-]{3,39}$/.test(code)) return new Response('-- [Flexozy] not found', T(404));
-  const v = await getVault(code);
+  const v = await getVaultFast(code);
   if(!v) return new Response('-- [Flexozy] not found', T(404));
   // ลิงก์ที่ต้องใช้ key: ส่งแค่ stub ที่ไม่มีความลับ — ต้องมี key+HWID ผ่าน /auth ถึงจะได้ซอส
   const ip = clientIp(req) || '';
@@ -21,6 +21,6 @@ export const GET = safe(async (req, { params }) => {
     if(await noteRawIssued(req)) return forbidden(); // ดึง stub รัว ๆ โดยไม่ตามไป /stage = พฤติกรรม dump
     return new Response(stagedStub(await origin(), code, ip, uaBind(req)), T(200)); // ขั้นที่ 1: stub ที่ซีล + token ผูก IP + โจทย์ proof (นับ views ที่ขั้นที่ 2)
   }
-  await incrViews(code);
+  await incrViews(code, v.owner_id);
   return new Response(tracker(await origin(), code) + v.script, T(200));
 });
