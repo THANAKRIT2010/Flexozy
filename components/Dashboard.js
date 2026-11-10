@@ -13,7 +13,7 @@ const VIEWS = {
   tokens:{ t:'TOKEN', s:'ยอดคงเหลือและกติกาการใช้ TOKEN ของบัญชีนี้', i:'bolt' },
 };
 const NAV = [[null, ['overview']], ['สคริปต์', ['create', 'links']], ['บัญชี', ['tokens']]];
-const SER = [{ key:'r', name:'ยอดรัน', color:'#fafafa' }, { key:'l', name:'ลิงก์ใหม่', color:'#a1a1aa' }, { key:'k', name:'ล็อกรหัส', color:'#71717a' }];
+const SER = [{ key:'r', name:'ยอดรัน', color:'#a78bfa' }, { key:'l', name:'ลิงก์ใหม่', color:'#f0abfc' }, { key:'k', name:'ล็อกรหัส', color:'#67e8f9' }];
 const sum = (a) => a.reduce((x, y) => x + y, 0);
 
 export default function Dashboard({ site }){
@@ -64,10 +64,10 @@ export default function Dashboard({ site }){
   const fl = links.filter(v => !q || (v.title + ' ' + v.code).toLowerCase().includes(q.toLowerCase()));
   const labels = series.map(x => x.d), range = labels.length ? `${dlabel(labels[0])} – ${dlabel(labels.at(-1))}` : '';
   const cards = [
-    { n:'ลิงก์ที่สร้าง', v:S.L, s:S.l, c:'#fafafa', i:'link', f:<><b>{fmt(links.length)}</b> ลิงก์ทั้งหมด</> },
-    { n:'ลิงก์ล็อกรหัส', v:S.K, s:S.k, c:'#d4d4d8', i:'lock', f:<><b>{lockPct}%</b> ของลิงก์ทั้งหมด</> },
-    { n:'ยอดรันสคริปต์', v:S.R, s:S.r, c:'#a1a1aa', i:'play', f:<><b>{fmt(S.R / (series.length || 1))}</b> ครั้งต่อวัน</> },
-    { n:'TOKEN ที่ใช้', v:S.T, s:S.t, c:'#71717a', i:'bolt', f:<><b>{tok === null || tok === undefined ? '–' : fmt(tok)}</b> คงเหลือ</> },
+    { n:'ลิงก์ที่สร้าง', v:S.L, s:S.l, c:'#a78bfa', i:'link', f:<><b>{fmt(links.length)}</b> ลิงก์ทั้งหมด</> },
+    { n:'ลิงก์ล็อกรหัส', v:S.K, s:S.k, c:'#c4b5fd', i:'lock', f:<><b>{lockPct}%</b> ของลิงก์ทั้งหมด</> },
+    { n:'ยอดรันสคริปต์', v:S.R, s:S.r, c:'#f0abfc', i:'play', f:<><b>{fmt(S.R / (series.length || 1))}</b> ครั้งต่อวัน</> },
+    { n:'TOKEN ที่ใช้', v:S.T, s:S.t, c:'#67e8f9', i:'bolt', f:<><b>{tok === null || tok === undefined ? '–' : fmt(tok)}</b> คงเหลือ</> },
   ];
 
   return (<div className={'fx dz' + (side ? ' open' : '')}>
@@ -128,7 +128,7 @@ export default function Dashboard({ site }){
             <li><Icon n="check" size={15}/>ฝากลิงก์<b>ล็อกรหัสผ่าน</b> หัก <b>{cost.toLocaleString()}</b> TOKEN ต่อลิงก์</li><li><Icon n="check" size={15}/>ฝากลิงก์ธรรมดา <b>ฟรี</b></li>
             <li><Icon n="check" size={15}/>ใส่รหัสผ่านให้ลิงก์เดิมครั้งแรก หัก {cost.toLocaleString()} เช่นกัน · เปลี่ยนรหัสภายหลังไม่หักเพิ่ม</li><li><Icon n="check" size={15}/>บันทึกลิงก์ไม่สำเร็จ ระบบคืน TOKEN ให้อัตโนมัติ</li></ul>
             <a className="dz-btn pri" href="#create" onClick={(e) => { e.preventDefault(); go('create'); }}>ฝากลิงก์ใหม่</a></div>
-          <div className="dz-card"><div className="dz-card-h"><span>TOKEN ที่ใช้ ({days} วัน)</span><i><Icon n="chart" size={15}/></i></div><b>{S.T.toLocaleString()}</b><Spark values={S.t.length ? S.t : [0, 0]} color="#a1a1aa" h={70}/></div></div>}
+          <div className="dz-card"><div className="dz-card-h"><span>TOKEN ที่ใช้ ({days} วัน)</span><i><Icon n="chart" size={15}/></i></div><b>{S.T.toLocaleString()}</b><Spark values={S.t.length ? S.t : [0, 0]} color="#67e8f9" h={70}/></div></div>}
       </section><footer className="dz-foot">© {new Date().getFullYear()} {site.hero.title}</footer></main>
     </div>
 
