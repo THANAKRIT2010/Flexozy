@@ -4,6 +4,7 @@ import LinkForm, { ls, copyText } from '@/components/LinkForm';
 import { Avatar, Modal, ProfileModal, PlayersList } from '@/components/Ui';
 import EditLink from '@/components/EditLink';
 import TopupCard from '@/components/TopupCard';
+import RunnersPanel from '@/components/RunnersPanel';
 import Icon from '@/components/Icons';
 import { Spark, AreaChart, fmt, dlabel } from '@/components/Charts';
 
@@ -11,6 +12,7 @@ const VIEWS = {
   overview:{ t:'ภาพรวม', s:'ยอดรันสคริปต์ ลิงก์ที่สร้าง และ TOKEN ที่ใช้ ในช่วงเวลาที่เลือก', i:'chart' },
   create:{ t:'ฝากลิงก์ใหม่', s:'วางโค้ด Lua แล้วแปลงเป็นลิงก์ส่วนตัว พร้อมล็อกรหัสผ่านได้', i:'plus' },
   links:{ t:'ลิงก์ของฉัน', s:'คัดลอก loadstring แก้ไข ดูผู้เล่น และลบลิงก์ที่ฝากไว้', i:'link' },
+  runners:{ t:'โปรไฟล์ผู้รัน Loader', s:'ดูโปรไฟล์ Roblox ที่รัน Loader ด้วย key — เห็นได้จากหน้านี้เลย ไม่ต้องเข้าหลังบ้านก่อน', i:'users' },
   tokens:{ t:'TOKEN & เติมเงิน', s:'เติม TOKEN ด้วยซอง TrueMoney ดูยอดคงเหลือและกติกาการใช้', i:'bolt' },
 };
 const NAV = [[null, ['overview']], ['สคริปต์', ['create', 'links']], ['บัญชี', ['tokens']]];
@@ -78,7 +80,7 @@ export default function Dashboard({ site }){
       <nav>{NAV.map(([g, ks]) => <div key={g || 'top'}>{g && <div className="dz-grp">{g}</div>}
         {ks.map(k => <a key={k} href={k === 'overview' ? '#' : '#' + k} className={view === k ? 'on' : ''} onClick={(e) => { e.preventDefault(); go(k); }}><Icon n={VIEWS[k].i} size={17}/>{VIEWS[k].t}{k === 'links' && links.length > 0 && <em>{links.length}</em>}</a>)}</div>)}
         {me.is_admin && <div><div className="dz-grp">แอดมิน</div>
-          <a href="/admin"><Icon n="shield" size={17}/>ภาพรวมระบบ</a><a href="/admin/keys"><Icon n="key" size={17}/>Key ผู้ใช้</a><a href="/admin/maps"><Icon n="map" size={17}/>แมพของ Hub</a><a href="/admin/appearance"><Icon n="palette" size={17}/>หน้าตาเว็บ</a></div>}
+          <a href="#runners" className={view === 'runners' ? 'on' : ''} onClick={(e) => { e.preventDefault(); go('runners'); }}><Icon n="users" size={17}/>โปรไฟล์ผู้รัน Loader</a><a href="/admin"><Icon n="shield" size={17}/>ภาพรวมระบบ</a><a href="/admin/keys"><Icon n="key" size={17}/>Key ผู้ใช้</a><a href="/admin/maps"><Icon n="map" size={17}/>แมพของ Hub</a><a href="/admin/appearance"><Icon n="palette" size={17}/>หน้าตาเว็บ</a></div>}
       </nav>
       <div className="grow"/>
       <button className="dz-me" onClick={() => setProf(true)}><Avatar src={me.avatar} name={me.username} size={30}/><span><b>{me.username}</b><small>{me.is_admin ? 'แอดมิน' : 'ผู้ใช้'}</small></span></button>
@@ -111,7 +113,8 @@ export default function Dashboard({ site }){
             <div className="dz-pills"><span>อัตราล็อกรหัส: <b>{lockPct}%</b></span><span>เฉลี่ย: <b>{fmt(S.R / (series.length || 1))}</b> รัน/วัน</span></div>
             <AreaChart labels={labels} hidden={hid} series={SER.map(s => ({ ...s, values:S[s.key] }))}/></div></>}
 
-        {view === 'create' && <div className="dz-narrow"><LinkForm endpoint="/api/vault" onCreated={reload} tokens={tok ?? null} lockCost={cost} admin={!!me.is_admin}/></div>}
+        {view === 'runners' && me.is_admin && <RunnersPanel/>}
+        {view === 'create' && <div className="lf-wrap"><LinkForm endpoint="/api/vault" onCreated={reload} tokens={tok ?? null} lockCost={cost} admin={!!me.is_admin}/></div>}
 
         {view === 'links' && <>
           <div className="dz-tools"><div className="dz-find"><Icon n="eye" size={15}/><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="ค้นหาชื่อหรือรหัสลิงก์"/></div><span className="grow"/><a className="dz-btn pri" href="#create" onClick={(e) => { e.preventDefault(); go('create'); }}><Icon n="plus" size={15}/>ฝากลิงก์ใหม่</a></div>
