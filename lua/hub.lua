@@ -43,6 +43,7 @@ local DISCORD_LINK = "discord.gg/" .. DISCORD_CODE
 --@@GAMES@@
 
 --@@FXAPI@@
+--@@KEYGUI@@
 
 local C = {
     bg = Color3.fromRGB(20, 20, 28),
@@ -1626,8 +1627,8 @@ end)
 
 local function showLogin()
     loginOpen = true
-    loginModal.Visible = true
-    tween(loginModal, 0.5, { Position = UDim2.new(0.5, 0, 0.82, 0) }, Enum.EasingStyle.Back)
+    loginModal.Visible = false -- ใช้หน้าใส่คีย์แบบใหม่ (KeyGuiShow) แทนกล่องเดิม
+    KeyGuiShow(FxApi, function() onAccessGranted() end, keyBox.Text)
     updateEffects()
 end
 

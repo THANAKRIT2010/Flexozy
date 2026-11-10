@@ -6,12 +6,13 @@ import Icon from '@/components/Icons';
 const YT = () => <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4" fill="#FF0033"/><path d="M10 9.2v5.6l4.8-2.8z" fill="#fff"/></svg>;
 const DC = () => <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="#5865F2" d="M19.3 5.3A16 16 0 0 0 15.4 4l-.5 1a14.6 14.6 0 0 0-5.8 0L9 4a16 16 0 0 0-3.9 1.3C2.6 9.1 1.9 12.8 2.2 16.4a16 16 0 0 0 4.8 2.4l1-1.6a10 10 0 0 1-1.6-.8l.4-.3a11.4 11.4 0 0 0 9.8 0l.4.3c-.5.3-1 .6-1.6.8l1 1.6a16 16 0 0 0 4.8-2.4c.4-4.2-.7-7.9-2.9-11.1zM9.1 14.2c-.9 0-1.7-.9-1.7-2s.8-2 1.7-2 1.7.9 1.7 2-.8 2-1.7 2zm5.9 0c-.9 0-1.7-.9-1.7-2s.8-2 1.7-2 1.7.9 1.7 2-.8 2-1.7 2z"/></svg>;
 const LOGO = { youtube:YT, discord:DC };
-const ERR = { too_early:'ยังไม่ครบ 15 วินาที รอให้ครบก่อนแล้วค่อยยืนยัน', not_started:'กดเริ่มก่อน', already_active:'คุณมีคีย์ใช้งานอยู่แล้ว', done:'ทำขั้นนี้ไปแล้ว', bad_task:'ไม่รู้จักขั้นนี้', bad_action:'คำขอไม่ถูกต้อง', login:'กรุณาเข้าสู่ระบบใหม่' };
+const ERR = { too_early:'ยังไม่ครบ 15 วินาที รอให้ครบก่อนแล้วค่อยยืนยัน', not_started:'กดเริ่มก่อน', already_active:'มีคีย์ใช้งานอยู่แล้ว', done:'ทำขั้นนี้ไปแล้ว', bad_task:'ไม่รู้จักขั้นนี้', bad_action:'คำขอไม่ถูกต้อง', login:'กรุณาเข้าสู่ระบบใหม่', invalid_key:'คีย์ไม่ถูกต้องหรือหมดอายุแล้ว', key_used:'คีย์นี้ถูกผูกกับบัญชีอื่นแล้ว' };
 const pad = (n) => String(n).padStart(2, '0');
 const left = (ms) => { const s = Math.max(0, Math.floor(ms / 1000)); return { d:Math.floor(s / 86400), h:Math.floor(s % 86400 / 3600), m:Math.floor(s % 3600 / 60) }; };
 
 export default function KeyPage(){
   const [d, setD] = useState(null), [now, setNow] = useState(() => Date.now()), [busy, setBusy] = useState(''), [err, setErr] = useState(''), [copied, setCopied] = useState(false);
+  const [menu, setMenu] = useState(false), [redeemOpen, setRedeemOpen] = useState(false), [rkey, setRkey] = useState(''), [rbusy, setRbusy] = useState(false), [rmsg, setRmsg] = useState('');
 
   useEffect(() => {
     fetch('/api/keyflow', { cache:'no-store' }).then(r => r.json()).then(j => setD({ ...j, at:Date.now() })).catch(() => setD({ authenticated:false, at:Date.now() }));
@@ -20,7 +21,7 @@ export default function KeyPage(){
 
   const apply = useCallback((j) => { const { err: _e, ...rest } = j; setD(p => ({ ...(p || {}), ...rest, at:Date.now() })); }, []);
 
-  // เปิดลิงก์ก่อน await เพื่อไม่ให้เบราว์เซอร์บล็อกป๊อปอัป
+  // เปิดลิงก์ก่อน fetch เพื่อไม่ให้เบราว์เซอร์บล็อกป๊อปอัป
   function act(action, task){
     if(busy) return;
     if(action === 'start'){ const t = d.tasks.find(x => x.id === task); if(t?.url) window.open(t.url, '_blank', 'noopener'); }
@@ -32,6 +33,17 @@ export default function KeyPage(){
       .finally(() => setBusy(''));
   }
 
+  async function redeem(e){
+    e.preventDefault(); if(rbusy || !rkey.trim()) return;
+    setRbusy(true); setRmsg('');
+    try{
+      const r = await fetch('/api/keyflow/redeem', { method:'POST', headers:{ 'content-type':'application/json' }, body:JSON.stringify({ key:rkey }) });
+      const j = await r.json().catch(() => ({}));
+      if(j.err) setRmsg(ERR[j.err] || 'แลกคีย์ไม่สำเร็จ'); else { setRkey(''); setRedeemOpen(false); apply(j); }
+    }catch{ setRmsg('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้'); }
+    setRbusy(false);
+  }
+
   async function copy(){
     try{ await navigator.clipboard.writeText(d.key); setCopied(true); setTimeout(() => setCopied(false), 1500); }
     catch{ setErr('คัดลอกไม่สำเร็จ'); }
@@ -39,13 +51,22 @@ export default function KeyPage(){
 
   if(d === null) return <main className="kp"><div className="kp-wrap"><div className="kp-card kp-sk"/></div></main>;
 
-  const shell = (inner, pill) => (
+  const shell = (inner, pill, me) => (
     <main className="kp">
       <header className="kp-top">
         <a className="kp-brand" href="/"><img src="/images/flexozy-logo.png" alt=""/>FLEXOZY</a>
         <span className="kp-grow"/>
         {pill}
-        {d.authenticated && <span className="kp-me"><Avatar src={d.user.avatar} name={d.user.username} size={24}/>{d.user.username}</span>}
+        {me && <div className="kp-dd">
+          <button className="kp-me" onClick={() => setMenu(m => !m)}><Avatar src={me.avatar} name={me.username} size={24}/>{me.username}<Icon n="down" size={13}/></button>
+          {menu && <div className="kp-menu">
+            <div className="kp-mh"><Avatar src={me.avatar} name={me.username} size={34}/><div><b>{me.username}</b><small>Discord · {me.id}</small></div></div>
+            <button onClick={() => { setMenu(false); setRedeemOpen(true); }}><Icon n="key" size={15}/>Redeem a key</button>
+            <a href="/account" onClick={() => setMenu(false)}><Icon n="user" size={15}/>Account</a>
+            <a href="https://discord.gg/WFUejxeggt" target="_blank" rel="noopener" onClick={() => setMenu(false)}><Icon n="users" size={15}/>Discord server</a>
+            <a href="/logout" className="kp-out"><Icon n="logout" size={15}/>Log out</a>
+          </div>}
+        </div>}
       </header>
       <div className="kp-wrap">{inner}</div>
     </main>
@@ -53,12 +74,11 @@ export default function KeyPage(){
 
   if(!d.authenticated) return shell(
     <>
-      <a className="kp-back" href="/">← กลับหน้าแรก</a>
-      <div className="kp-h"><div><h1>รับคีย์</h1></div></div>
-      <p className="kp-sub">เข้าสู่ระบบด้วย Discord ก่อน เพื่อผูกคีย์กับบัญชีของคุณ</p>
+      <div className="kp-h"><h1>Hey, Guest</h1></div>
+      <p className="kp-sub">เข้าสู่ระบบด้วย Discord เพื่อรับและผูกคีย์กับบัญชีของคุณ</p>
       <div className="kp-card kp-center"><b>ยังไม่ได้เข้าสู่ระบบ</b><p className="kp-sub">ใช้เวลาไม่ถึงหนึ่งนาทีในการรับคีย์</p>
         <a className="kp-btn lk" href="/login/discord">เข้าสู่ระบบด้วย Discord</a></div>
-    </>, null);
+    </>, null, null);
 
   const active = d.state === 'active', expired = d.state === 'expired', exp = d.exp;
   const remMs = active && exp ? Math.max(0, exp - now) : 0;
@@ -71,9 +91,8 @@ export default function KeyPage(){
   const pill = active ? <span className="kp-pill"><i/>{exp ? `${T.d}d ${pad(T.h)}h ${pad(T.m)}m left` : 'Lifetime'}</span> : null;
 
   return shell(<>
-    <a className="kp-back" href="/">← Dashboard</a>
-    <div className="kp-h"><div><h1>Hey, {d.user.username}</h1></div></div>
-    <p className="kp-sub">คีย์ของคุณและวิธีรับเวลาเพิ่ม</p>
+    <div className="kp-h"><h1>Hey, {d.user.username}</h1></div>
+    <p className="kp-sub">เวลาคีย์ของคุณ และวิธีรับเวลาเพิ่ม</p>
 
     <div className="kp-card">
       <div className="kp-lbl"><span>Key Balance</span>
@@ -116,7 +135,13 @@ export default function KeyPage(){
         <div className="kp-logo"><Icon n="key" size={20}/></div>
         <b>Redeem a key</b>
         {active ? <><div className="kp-key">{d.key}</div><button className="kp-btn ghost" onClick={copy}>{copied ? 'คัดลอกแล้ว ✓' : 'คัดลอกคีย์'}</button></>
-          : <p>ทำครบทั้ง 2 ขั้นตอนเพื่อรับคีย์</p>}
+          : redeemOpen ? <form className="kp-redeem" onSubmit={redeem}>
+              <input value={rkey} onChange={e => setRkey(e.target.value)} placeholder="FX-XXXX-XXXX-XXXX-XXXX" autoComplete="off" spellCheck={false}/>
+              <button className="kp-btn" disabled={rbusy || !rkey.trim()}>{rbusy ? '...' : 'ใช้คีย์'}</button>
+              {rmsg && <div className="kp-err">{rmsg}</div>}
+            </form>
+          : <><p>ซื้อคีย์มาแล้ว หรือเคยมีคีย์ก่อนมีบัญชี? ใส่คีย์เพื่อผูกกับบัญชีนี้</p>
+              <button className="kp-btn ghost" onClick={() => setRedeemOpen(true)}>ใส่คีย์</button></>}
       </div>
       <a className="kp-card kp-tile kp-link" href={dc?.url} target="_blank" rel="noopener">
         <div className="kp-logo"><DC/></div>
@@ -124,5 +149,5 @@ export default function KeyPage(){
         <p>อัปเดต ซัพพอร์ต และประกาศ</p>
       </a>
     </div>
-  </>, pill);
+  </>, pill, d.user);
 }

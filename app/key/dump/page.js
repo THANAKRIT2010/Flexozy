@@ -1,5 +1,3 @@
-import KeyPage from '@/components/KeyPage';
-export const dynamic = 'force-dynamic';
-export const metadata = { title:'รับคีย์ · Flexozy' };
-// https://flexozy.xyz/key/dump — หน้ารับคีย์ (เดิมไม่มี route นี้ จึงขึ้น 404)
-export default function Page(){ return <KeyPage/>; }
+import { redirect } from 'next/navigation';
+// ย้ายระบบ key ไปที่ app.flexozy.xyz แล้ว — ลิงก์เก่า /key/dump ส่งต่อไปที่นั่น
+export default function Page(){ redirect('https://app.flexozy.xyz/'); }

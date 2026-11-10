@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { BOT_RE, forbidden, looksAutomated } from './lib/bots';
 import { checkPass, PASS_COOKIE } from './lib/pass';
 import { challengePage } from './lib/challenge';
-import { allApiHosts, hostOf } from './lib/net';
+import { allApiHosts, hostOf, appHost, appUrl } from './lib/net';
 import { SecretError } from './lib/secret';
 // ด่านหน้าสุดของทุกคำขอ — ทุกการปฏิเสธเครื่องมือเข้าถึงเว็บตอบ 403 ข้อความเดียวกัน
 // 1) ทุกโดเมน: AI / crawler / เครื่องมือยิง HTTP (lib/bots.js) → 403 (ยกเว้น Discordbot ดูตัวอย่างลิงก์ของ "หน้าเว็บ")
@@ -36,6 +36,7 @@ async function run(req){
   }
   // ----- โดเมนเว็บ (หรือโฮสต์ที่ไม่ใช่โดเมน API) -----
   if(apis.length && API_ONLY.test(path)) return nf(); // ปิด flexozy.xyz/bootstrap-source และเพื่อน ๆ
+  if(/^\/key\/dump\/?$/.test(path)) return NextResponse.redirect(appUrl(), 308); // ย้ายไป app.flexozy.xyz แล้ว
   if(exec || preview) return NextResponse.next();
   if(!['GET','HEAD','OPTIONS'].includes(req.method)){
     const o = req.headers.get('origin');
@@ -45,6 +46,8 @@ async function run(req){
   if(looksAutomated(req)) return forbidden();
   if(!OPEN.test(path) && !await checkPass(req.cookies.get(PASS_COOKIE)?.value, ua))
     return path.startsWith('/api/') ? forbidden() : challengePage(host || 'flexozy.xyz');
+  // โดเมน app: '/' = หน้ารับคีย์ · '/account' = บัญชี (เขียนเส้นทางภายใน ผู้ใช้เห็น URL เดิม)
+  if(host && host === appHost()){ const m = { '/':'/keyapp', '/account':'/keyapp/account' }[path.replace(/\/+$/,'') || '/']; if(m){ const u = req.nextUrl.clone(); u.pathname = m; return NextResponse.rewrite(u); } }
   const vm = path.match(/^\/vault\/([^/=%]+)(?:=|%3[Dd])/);
   if(vm){ const u = req.nextUrl.clone(); u.pathname = `/vault/${vm[1]}`; return NextResponse.rewrite(u); }
   return NextResponse.next();

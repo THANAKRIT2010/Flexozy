@@ -1,6 +1,7 @@
 // แปลง lua/hub.lua → lib/hubLua.js (ฝังเป็นสตริง) — รัน: npm run build:lua
 import fs from 'fs';
-const src = fs.readFileSync(new URL('../lua/hub.lua', import.meta.url), 'utf8');
+const kg = fs.readFileSync(new URL('../lua/keygui.lua', import.meta.url), 'utf8');
+const src = fs.readFileSync(new URL('../lua/hub.lua', import.meta.url), 'utf8').replace('--@@KEYGUI@@', () => kg);
 if(src.includes('`') || src.includes('${')) { console.error('hub.lua ห้ามมี backtick หรือ ${ (ชนกับ template literal)'); process.exit(1); }
 for(const t of ['--@@KEYED@@','--@@KEYLINK@@','--@@SUPPORTLINK@@','--@@DISCORDCODE@@','--@@GAMES@@','--@@FXAPI@@'])
   if(!src.includes(t)) { console.error('ขาด placeholder ' + t); process.exit(1); }
