@@ -5,7 +5,7 @@ import Icon from './Icons';
 // v13: หน้าต่างแก้ไขลิงก์ — ดีไซน์ใหม่ให้รู้สึกเหมือนเปิดไฟล์ในตัวแก้โค้ดจริง ๆ (เลขบรรทัด, จุดบอกว่ายังไม่บันทึก, Ctrl/Cmd+S)
 // เต็มจอทันทีที่กด ไม่ต้องเลื่อนหาอะไร ปุ่มบันทึกอยู่แถบบนตลอด — ใช้ createPortal กัน ancestor มีผลต่อ position:fixed
 const MSG = { not_authenticated:'กรุณาเข้าสู่ระบบก่อน', not_found:'ไม่พบลิงก์ หรือไม่มีสิทธิ์แก้ไข', empty_script:'โค้ดห้ามว่าง', too_large:'โค้ดยาวเกิน 200,000 ตัวอักษร', rate_limited:'แก้ไขถี่เกินไป รอสักครู่', forbidden:'เฉพาะแอดมิน', bad_request:'ข้อมูลไม่ถูกต้อง' };
-export default function EditLink({ code, admin, onClose, onSaved }){
+export default function EditLink({ code, admin, onClose, onSaved, lockCost = 1000 }){
   const [mounted, setMounted] = useState(false);
   const [d, setD] = useState(null), [f, setF] = useState({ title:'', script:'', needs_key:false }), [pw, setPw] = useState(''), [rmPw, setRmPw] = useState(false), [showPw, setShowPw] = useState(false);
   const [err, setErr] = useState(''), [busy, setBusy] = useState(false), [ok, setOk] = useState(false);
@@ -32,7 +32,8 @@ export default function EditLink({ code, admin, onClose, onSaved }){
     if(pw.trim()) body.password = pw; else if(rmPw) body.password = '';
     if(admin) body.needs_key = f.needs_key;
     try{ const r = await fetch('/api/vault/' + code, { method:'PATCH', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify(body) }), j = await r.json().catch(() => ({}));
-      if(!r.ok) setErr(MSG[j.error] || 'บันทึกไม่สำเร็จ');
+      if(!r.ok && j.error==='insufficient_tokens') setErr(`TOKEN ไม่พอ — ตั้งรหัสผ่านครั้งแรกใช้ ${(j.need||lockCost).toLocaleString()} TOKEN (คงเหลือ ${(j.balance??0).toLocaleString()})`);
+      else if(!r.ok) setErr(MSG[j.error] || 'บันทึกไม่สำเร็จ');
       else { setOk(true); setPw(''); setRmPw(false); setD({ ...d, title:f.title, script:f.script, needs_key:f.needs_key, has_password:!!j.has_password }); onSaved?.(); setTimeout(() => setOk(false), 2200); }
     }catch{ setErr('บันทึกไม่สำเร็จ'); }
     setBusy(false);

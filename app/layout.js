@@ -10,7 +10,7 @@ export default async function RootLayout({ children }){
     <head>
       <link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin=""/>
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap"/>
-      <meta name="theme-color" content="#09090d"/>
+      <meta name="theme-color" content="#f3f6fb"/>
     </head>
     <body><ClickFx />{children}</body></html>);
 }

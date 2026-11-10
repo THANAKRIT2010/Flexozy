@@ -8,8 +8,8 @@ import Icon from '@/components/Icons';
 import EditLink from '@/components/EditLink';
 export default function Home({ site }){
   const { hero, stats, countMs } = site;
-  const [me,setMe]=useState(undefined), [list,setList]=useState([]), [cp,setCp]=useState(''), [prof,setProf]=useState(false), [pl,setPl]=useState(null), [ed,setEd]=useState(null);
-  const load=useCallback(async()=>{ const r=await fetch('/api/vault'); if(r.ok) setList(await r.json()); },[]);
+  const [me,setMe]=useState(undefined), [list,setList]=useState([]), [cp,setCp]=useState(''), [prof,setProf]=useState(false), [pl,setPl]=useState(null), [ed,setEd]=useState(null), [tok,setTok]=useState(null), [cost,setCost]=useState(1000);
+  const load=useCallback(async()=>{ const [r,m]=await Promise.all([fetch('/api/vault'),fetch('/api/me')]); if(r.ok) setList(await r.json()); try{ const d=await m.json(); if(d.authenticated){ setTok(d.tokens); if(d.lock_cost) setCost(d.lock_cost); } }catch{} },[]);
   useEffect(()=>{ fetch('/api/me').then(r=>r.json()).then(d=>{ setMe(d.authenticated?d.user:null); if(d.authenticated) load(); }); },[load]);
   async function del(code){ if(!confirm('ลบลิงก์นี้?')) return; await fetch('/api/vault/'+code,{method:'DELETE'}); load(); }
   const copy=(t,k)=>{copyText(t);setCp(k);setTimeout(()=>setCp(''),1200)};
@@ -17,7 +17,7 @@ export default function Home({ site }){
     <header className="tn"><div className="tn-in">
       <a className="tn-brand" href="/"><img src="/images/flexozy-logo.png" alt=""/><b>FLEXOZY</b></a><span className="grow"/>
       {me===null && <a className="btn pri" href="/login/discord">เข้าสู่ระบบด้วย Discord</a>}
-      {me && <>{me.is_admin&&<a className="btn ghost" href="/admin">หลังบ้าน</a>}
+      {me && <>{tok!==null&&<span className="tk" title="TOKEN คงเหลือ"><Icon n="bolt" size={14}/><b>{tok.toLocaleString()}</b> TOKEN</span>}{me.is_admin&&<a className="btn ghost" href="/admin">หลังบ้าน</a>}
         <button className="who" onClick={()=>setProf(true)}><Avatar src={me.avatar} name={me.username} size={28}/><span className="who-n">{me.username}</span></button>
         <a className="btn ghost" href="/logout">ออก</a></>}
     </div></header>
@@ -43,7 +43,7 @@ export default function Home({ site }){
         {me===null && <div className="card gate rv"><div className="gate-ic"><Icon n="shield" size={26}/></div><h2>เข้าสู่ระบบเพื่อสร้างลิงก์</h2><p>ใช้บัญชี Discord ของคุณ — วางโค้ด แปลงเป็นลิงก์ ตั้งรหัสผ่านได้ และดูคนรันในเกมได้</p><a className="btn pri lg" href="/login/discord">เข้าสู่ระบบด้วย Discord</a></div>}
         {me && <><div className="cs-h rv"><span className="cs-eyebrow"><Icon n="spark" size={14}/>สร้างลิงก์สคริปต์</span><h2>วางโค้ด <em>แล้วรับลิงก์</em> ได้ทันที</h2><p>วางโค้ด Lua → ตั้งรหัสผ่านได้ → ได้ loadstring พร้อมใช้ใน executor</p>
           <ol className="cs-steps"><li><b>1</b>วางโค้ด</li><li><b>2</b>ตั้งค่า</li><li><b>3</b>คัดลอกลิงก์</li></ol></div>
-          <LinkForm endpoint="/api/vault" onCreated={load}/></>}
+          <LinkForm endpoint="/api/vault" onCreated={load} tokens={tok} lockCost={cost}/></>}
         {me&&list.length>0&&<div className="card mylinks"><div className="f-h" style={{marginTop:0}}>ลิงก์ของฉัน <em>{list.length} ลิงก์</em></div>
           {list.map(v=><div className="item" key={v.code}><div style={{minWidth:0}}><div className="t">{v.title}{v.has_password&&' 🔒'}</div><div className="s">{v.code} · {v.views} views</div></div>
             <div className="row"><button className="btn ghost" onClick={()=>copy(ls(v.raw_url),v.code)}>{cp===v.code?'Copied ✓':'Loadstring'}</button>
@@ -56,7 +56,7 @@ export default function Home({ site }){
       <footer className="foot">© {new Date().getFullYear()} Flexozy</footer>
     </main>
     {prof&&me&&<ProfileModal p={{name:me.username,avatar:me.avatar,id:me.id,tag:me.is_admin?'ADMIN':'',logout:true}} links={list} onClose={()=>setProf(false)} onPlayers={c=>{setProf(false);setPl(c)}}/>}
-    {ed&&<EditLink code={ed} onClose={()=>setEd(null)} onSaved={load}/>}
+    {ed&&<EditLink code={ed} onClose={()=>setEd(null)} onSaved={load} lockCost={cost}/>}
     {pl&&<Modal onClose={()=>setPl(null)}><h3 className="mdl-t">ผู้เล่นที่รัน · {pl}</h3><PlayersList code={pl}/></Modal>}
   </div>);
 }

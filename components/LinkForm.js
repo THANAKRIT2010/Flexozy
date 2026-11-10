@@ -9,7 +9,7 @@ const MSG = { not_authenticated:'กรุณาเข้าสู่ระบ�
 export { ls };
 export const copyText = (t) => navigator.clipboard.writeText(t);
 const MAX = 200000;
-export default function LinkForm({ endpoint, admin, onCreated, hosts = [] }){
+export default function LinkForm({ endpoint, admin, onCreated, hosts = [], tokens = null, lockCost = 1000 }){
   const empty = { title:'', script:'', password:'', slug:'', needs_key:false };
   const [f,setF]=useState(empty), [human,setHuman]=useState(null), [k,setK]=useState(0), [showPw,setShowPw]=useState(false);
   const [res,setRes]=useState(null), [err,setErr]=useState(''), [busy,setBusy]=useState(false), [cp,setCp]=useState('');
@@ -24,6 +24,7 @@ export default function LinkForm({ endpoint, admin, onCreated, hosts = [] }){
     e.preventDefault(); if(!human) return; setBusy(true); setErr('');
     let r, d; try{ r=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...f,...human})}); d=await r.json().catch(()=>({})); }catch{ r={ok:false}; d={}; }
     setBusy(false); setHuman(null); setK(x=>x+1); // โจทย์/โทเคนใช้ได้ครั้งเดียว → ขอใหม่ทุกครั้ง
+    if(d.error==='insufficient_tokens') return setErr(`TOKEN ไม่พอ — ล็อกรหัสผ่านใช้ ${(d.need||lockCost).toLocaleString()} TOKEN (คงเหลือ ${(d.balance??0).toLocaleString()}) · เว้นรหัสผ่านไว้เพื่อฝากฟรี`);
     if(!r.ok) return setErr(MSG[d.error]||'สร้างลิงก์ไม่สำเร็จ');
     setRes(d); setF(empty); onCreated?.();
   }
@@ -56,6 +57,7 @@ export default function LinkForm({ endpoint, admin, onCreated, hosts = [] }){
           <div className="cf-opt-h"><span className="cf-opt-ic"><Icon n="lock" size={16}/></span><div><b>รหัสผ่านหน้าดูโค้ด</b><small>เว้นว่าง = ใครก็เปิดหน้าดูได้</small></div></div>
           <div className="cf-pw"><input type={showPw?'text':'password'} value={f.password} onChange={set('password')} placeholder="ตั้งรหัสผ่าน (ไม่บังคับ)" maxLength={128} autoComplete="new-password"/>
             <button type="button" className="cf-eye" onClick={()=>setShowPw(v=>!v)} aria-label="แสดง/ซ่อนรหัสผ่าน"><Icon n={showPw?'eyeoff':'eye'} size={16}/></button></div>
+          {!admin&&<div className="tk-note"><Icon n="bolt" size={13}/>ใส่รหัสผ่านจะหัก <b>{lockCost.toLocaleString()}</b> TOKEN ต่อลิงก์{tokens!==null&&<> · คงเหลือ <b>{tokens.toLocaleString()}</b></>}</div>}
         </div>
         {admin && <div className="cf-opt">
           <div className="cf-opt-h"><span className="cf-opt-ic"><Icon n="link" size={16}/></span><div><b>โค้ดลิงก์ที่กำหนดเอง</b><small>เว้นว่างเพื่อสุ่มให้อัตโนมัติ</small></div></div>

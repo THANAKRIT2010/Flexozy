@@ -276,3 +276,31 @@ input:focus,textarea:focus{outline:none;box-shadow:0 0 0 2px rgba(255,255,255,.3
 .ed-chk{display:flex;gap:8px;align-items:center;cursor:pointer;font-size:12.5px;color:var(--dim)}
 .ed-chk input{width:auto}
 @media(max-width:760px){.ed-body{flex-direction:column}.ed-side{flex:0 0 auto;border-left:none;border-top:1px solid var(--line);flex-direction:row;flex-wrap:wrap}.ed-opt{flex:1 1 220px}.ed-bar{row-gap:8px}.ed-kbd{display:none}}
+
+/* ===== v13 · ธีมฟ้า-ขาว (หน้าแรก + modal) — ใช้โทเคนใน .fx เท่านั้น หน้า monochrome อื่น ๆ ไม่กระทบ ===== */
+.fx{--bg:#f3f7fd;--surface:#ffffff;--surface-2:#f3f7fc;--line:#e0e8f4;--line-2:#c9d7ec;--text:#0f1b33;--dim:#5f7090;--main-soft:var(--main);color:var(--text)}
+.fx-bg::before{opacity:.09;background-image:linear-gradient(rgba(var(--main-rgb),.7) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--main-rgb),.7) 1px,transparent 1px)}
+.fx-bg i{opacity:.28}.fx-bg canvas,.fx-vig{display:none}
+.tn-in{background:rgba(255,255,255,.82);box-shadow:0 10px 30px -18px rgba(30,70,140,.35)}
+.fx .who{background:#fff}.fx button.who:hover{background:#eef4fd}
+.hero-badge{background:rgba(var(--main-rgb),.09);border-color:rgba(var(--main-rgb),.28)}
+.hero .hero-t{background:linear-gradient(180deg,#0f1b33 25%,var(--main) 140%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sx-c{background:#fff;box-shadow:0 1px 2px rgba(30,70,140,.05),0 18px 40px -30px rgba(30,70,140,.35)}
+.sx-c:hover{box-shadow:0 22px 46px -24px rgba(var(--main-rgb),.45)}
+.sx-ic{box-shadow:none;background:rgba(var(--main-rgb),.10);border-color:rgba(var(--main-rgb),.2)}
+.sx-wm{color:rgba(var(--main-rgb),.07)}
+.fx .card{background:#fff;box-shadow:0 1px 2px rgba(30,70,140,.05),0 30px 70px -44px rgba(30,70,140,.4)}
+.fx .btn{border-color:rgba(var(--main-rgb),.55)}
+.fx .btn.ghost{background:#fff;color:var(--text);border-color:var(--line-2)}.fx .btn.ghost:hover{background:#eef4fd;color:var(--text)}
+.fx .res{background:linear-gradient(180deg,rgba(var(--main-rgb),.07),transparent),#fff}
+.fx .item,.fx input,.fx textarea{background:#f6f9fd}
+.ts-box{border-color:var(--line-2);background:#f6f9fd}.f-n{border-color:var(--main);color:var(--main)}
+.foot{color:var(--dim)}
+.mdl{background:rgba(15,27,51,.45)}
+.mdl-box{background:#fff;color:var(--text);box-shadow:0 40px 100px -30px rgba(15,27,51,.45)}
+.fx .mdl-x{color:var(--text)}
+
+/* TOKEN */
+.fx .tk{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:999px;border:1px solid rgba(var(--main-rgb),.3);background:rgba(var(--main-rgb),.08);color:var(--main);font-size:12.5px;font-weight:600;white-space:nowrap}.fx .tk b{font-variant-numeric:tabular-nums}
+.tk-note{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:8px;font-size:12px;color:var(--dim)}.tk-note svg{color:var(--main)}.tk-note b{color:var(--text)}
+@media(max-width:640px){.fx .tk{padding:0 9px;font-size:11.5px}}

@@ -29,16 +29,24 @@ export default function AdminShell({ user, children }){
       {NAV.map(([group, items]) => (<nav className="ad-nav" key={group}><span className="ad-group">{group}</span>
         {items.map(([h, l, i]) => <Link key={h} href={h} className={path === h ? 'on' : ''}><Icon n={i} size={18}/>{l}</Link>)}</nav>))}
       <div className="ad-sp"/>
-      <a className="ad-user" href="/"><Icon n="eye" size={18}/>ดูหน้าเว็บ</a>
       <div className="ad-me"><Avatar src={user.avatar} name={user.username} size={34}/><div><b>{user.username}</b><small>แอดมิน</small></div></div>
       <a className="ad-out" href="/logout">ออกจากระบบ</a>
     </aside>
-    <main className="ad-main"><div className="ad-wrap">
-      <header className="ad-top">
+    <main className="ad-main">
+      <header className="ad-bar">
         <button className="ad-burger" onClick={() => setOpen(true)} aria-label="เมนู"><Icon n="menu" size={20}/></button>
-        <div><h1>{t}</h1><p>{sub}</p></div>
+        <nav className="ad-crumb"><Link href="/admin">Dashboard</Link><span>/</span><b>{t}</b></nav>
+        <span className="grow"/>
+        <a className="ad-chip" href="/"><Icon n="eye" size={15}/>ดูหน้าเว็บ</a>
+        <div className="ad-chip me"><Avatar src={user.avatar} name={user.username} size={22}/>{user.username}</div>
       </header>
-      {children}
-    </div></main>
+      <div className="ad-wrap">
+        <section className="ad-top">
+          <i className="ad-top-ic"><Icon n={NAV.flatMap(g => g[1]).find(x => x[0] === path)?.[2] || 'home'} size={22}/></i>
+          <div><h1>{t}</h1><p>{sub}</p></div>
+        </section>
+        {children}
+      </div>
+    </main>
   </div>);
 }

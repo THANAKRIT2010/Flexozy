@@ -21,8 +21,9 @@ export function Panel({ title, sub, actions, children, className = '' }){
 }
 // การ์ดสถิติ: ตัวเลข (number) จะนับขึ้นอัตโนมัติ · icon = id จาก components/Icons.js
 export const Stat = ({ label, value, tone = '', hint, icon }) => (<div className={'ad-stat ' + tone}>
-  {icon && <i className="ad-stat-ic"><Icon n={icon} size={20}/></i>}
-  <div className="ad-stat-tx"><span>{label}</span><b>{typeof value === 'number' ? <CountUp to={value} ms={1400}/> : value}</b>{hint && <em>{hint}</em>}</div></div>);
+  <div className="ad-stat-hd"><span>{label}</span>{icon && <i className="ad-stat-ic"><Icon n={icon} size={16}/></i>}</div>
+  <b>{typeof value === 'number' ? <CountUp to={value} ms={1400}/> : value}</b>
+  <em>{hint || '\u00a0'}</em></div>);
 export const Empty = ({ children }) => <div className="empty">{children}</div>;
 // ผลทดสอบ 1 บรรทัด: ✓ / ✕ / … พร้อมรายละเอียด
 export const Result = ({ ok, pending, label, detail }) => (
