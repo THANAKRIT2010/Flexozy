@@ -1,7 +1,7 @@
 import { denied, clientIp, EXEC_HEADERS } from '@/lib/vault';
 import { forbidden } from '@/lib/bots';
 import { authorize, autoKeyOn, autoKeyFor, hwidOk } from '@/lib/keys';
-import { hit } from '@/lib/db';
+import { hit, flag, bannedIdent, noteSeen } from '@/lib/db';
 import { banned, strike } from '@/lib/guard';
 import { checkChallenge, proofRequired } from '@/lib/proof';
 import { isApiHost } from '@/lib/net';
@@ -18,6 +18,9 @@ export const POST = safe(async (req) => {
   const raw = await req.text().catch(()=>''); if(raw.length > 1024) return forbidden();
   let b; try{ b = JSON.parse(raw) }catch{ return forbidden() }
   if(!b || typeof b !== 'object') return forbidden();
+  // v21: HWID / Roblox ID ที่ถูกแบน = ใช้ไม่ได้ทุกสคริปต์ และ IP ใหม่ที่เครื่องนี้ใช้ถูกแบนตาม 24 ชม.
+  if(await bannedIdent({ hwid:b.hwid, uid:b.uid })){ await flag('ban:' + ip, 86400); return forbidden(); }
+  await noteSeen({ ip, src:'auth', code:String(b.scope || ''), hwid:b.hwid, uid:b.uid, un:b.un, dn:b.dn });
   // v11: ต้องแนบ challenge (sc) + คำตอบ (pf) ที่ได้จากการ "รัน Lua จริง" — บอทที่ยิง POST /auth ตรง ๆ (แม้หน้าตาเหมือน Roblox) จะไม่มี
   // ใช้ได้ทั้งการขอ token ด้วย key และการขอออก key อัตโนมัติ (AUTO_KEY) ซึ่งเดิมเป็นช่องที่บอทเอา HWID สุ่มมาขอ key ฟรีได้
   if(proofRequired()){

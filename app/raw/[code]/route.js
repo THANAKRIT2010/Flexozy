@@ -1,4 +1,4 @@
-import { getVaultFast, incrViews } from '@/lib/db';
+import { getVaultFast, incrViews, noteSeen } from '@/lib/db';
 import { denied, tracker, origin, staged, stagedStub, needsKey, keyedStub, EXEC_HEADERS } from '@/lib/vault';
 import { safe } from '@/lib/http';
 import { forbidden } from '@/lib/bots';
@@ -14,6 +14,7 @@ export const GET = safe(async (req, { params }) => {
   if(!/^[A-Za-z0-9][A-Za-z0-9_-]{3,39}$/.test(code)) return new Response('-- [Flexozy] not found', T(404));
   const v = await getVaultFast(code);
   if(!v) return new Response('-- [Flexozy] not found', T(404));
+  await noteSeen({ ip:clientIp(req), src:'raw', code });
   // ลิงก์ที่ต้องใช้ key: ส่งแค่ stub ที่ไม่มีความลับ — ต้องมี key+HWID ผ่าน /auth ถึงจะได้ซอส
   const ip = clientIp(req) || '';
   if(needsKey(v)) return new Response(keyedStub(await origin(), code, ip), T(200));

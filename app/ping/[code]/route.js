@@ -1,4 +1,4 @@
-import { vaultExists, pingPlayer, hit } from '@/lib/db';
+import { vaultExists, pingPlayer, hit, isFlagged, flag, bannedIdent, noteSeen } from '@/lib/db';
 import { isBot, isBrowser, clientIp } from '@/lib/vault';
 import { forbidden } from '@/lib/bots';
 import { safe } from '@/lib/http';
@@ -11,9 +11,12 @@ export const GET = safe(async (req, { params }) => {
   const { code } = await params, sp = new URL(req.url).searchParams, id = String(sp.get('u')||'');
   if(!/^[A-Za-z0-9][A-Za-z0-9_-]{3,39}$/.test(code) || !/^\d{1,16}$/.test(id)) return T('bad',400);
   // กันยิงปลอมให้ KV บวม: ต่อ IP และต่อโค้ดลิงก์
-  const ip = clientIp(req) || 'unknown';
+  const ip = clientIp(req) || 'unknown', hw = String(sp.get('h') || '').slice(0, 256);
+  if(await isFlagged('ban:' + ip)) return forbidden();
+  if(await bannedIdent({ hwid:hw, uid:id })){ await flag('ban:' + ip, 86400); return forbidden(); }
   if(await hit('ping:'+ip, 60) > 30 || await hit('pingc:'+code, 60) > 600) return T('slow',429);
   if(!await vaultExists(code)) return T('not_found',404);
+  await noteSeen({ ip, src:'ping', code, hwid:hw, uid:id, un:sp.get('n'), dn:sp.get('d') });
   await pingPlayer(code, { id, name:clean(sp.get('n'),40), display:clean(sp.get('d'),50), place:clean(sp.get('p'),20), game:clean(sp.get('g'),80), ts:Date.now() });
   return T('ok',200);
 });
