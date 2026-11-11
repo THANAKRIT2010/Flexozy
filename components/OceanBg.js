@@ -84,7 +84,7 @@ export default function OceanBg(){
         const sf = () => { const mx = Math.max(1, document.documentElement.scrollHeight - innerHeight); sc.t = Math.min(Math.max(scrollY / mx, 0), 1); };
         const draw = (ts) => { m.x += (m.tx - m.x) * .05; m.y += (m.ty - m.y) * .05; m.v += (m.tv - m.v) * .07; m.tv *= .94; sc.c += (sc.t - sc.c) * .06;
           gl.uniform2f(uR, c.width, c.height); gl.uniform1f(uT, (ts - t0) * .001); gl.uniform2f(uM, m.x, m.y); gl.uniform1f(uV, m.v); gl.uniform1f(uS, sc.c); gl.drawArrays(gl.TRIANGLES, 0, 6); };
-        const loop = (ts) => { if(!document.hidden) draw(ts); raf = requestAnimationFrame(loop); };
+        let fr = 0; const loop = (ts) => { if(!document.hidden && !(small && (fr++ & 1))) draw(ts); raf = requestAnimationFrame(loop); };
         rs(); sf(); addEventListener('resize', rs, { passive:true }); addEventListener('mousemove', mv, { passive:true }); addEventListener('scroll', sf, { passive:true });
         if(still) draw(t0 + 4000); else raf = requestAnimationFrame(loop);
         stop = () => { removeEventListener('resize', rs); removeEventListener('mousemove', mv); removeEventListener('scroll', sf); };

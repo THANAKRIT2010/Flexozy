@@ -2,6 +2,7 @@ import './globals.css';
 import './dash.css';
 import './fx.css';
 import RouteFx from '@/components/RouteFx';
+import OceanBg from '@/components/OceanBg';
 import ClickFx from '@/components/ClickFx';
 import { getSite, themeVars, DEFAULT_SITE } from '@/lib/site';
 export const dynamic = 'force-dynamic';
@@ -15,5 +16,5 @@ export default async function RootLayout({ children }){
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Prompt:wght@500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap"/>
       <meta name="theme-color" content="#07060d"/>
     </head>
-    <body><ClickFx /><RouteFx />{children}</body></html>);
+    <body><ClickFx /><RouteFx /><OceanBg />{children}</body></html>);
 }

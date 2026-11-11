@@ -35,8 +35,8 @@ export default function LinkForm({ endpoint, admin, onCreated, hosts = [], token
   return (<form className="cf mq" onSubmit={submit}>
     <div className="mq-controls">
       <div className="mq-left">
-        <div className="mq-pills" role="radiogroup" aria-label="การเข้าถึง"><button type="button" className={!lock?'on':''} onClick={()=>pickLock(false)}><Icon n="eye" size={13}/>สาธารณะ</button><button type="button" className={lock?'on':''} onClick={()=>pickLock(true)}><Icon n="lock" size={13}/>ล็อกรหัสผ่าน</button></div>
-        {admin&&<div className="mq-pills" role="radiogroup" aria-label="key"><button type="button" className={!f.needs_key?'on':''} onClick={()=>setF(p=>({...p,needs_key:false}))}>ไม่ใช้ key</button><button type="button" className={f.needs_key?'on':''} onClick={()=>setF(p=>({...p,needs_key:true}))}><Icon n="key" size={13}/>ใช้ key (HWID)</button></div>}
+        <div className="mq-grp"><small>การเข้าถึง</small><div className="mq-pills" role="radiogroup" aria-label="การเข้าถึง"><button type="button" className={!lock?'on':''} onClick={()=>pickLock(false)}><Icon n="eye" size={13}/>สาธารณะ</button><button type="button" className={lock?'on':''} onClick={()=>pickLock(true)}><Icon n="lock" size={13}/>ล็อกรหัสผ่าน</button></div></div>
+        {admin&&<div className="mq-grp"><small>การใช้ key</small><div className="mq-pills" role="radiogroup" aria-label="key"><button type="button" className={!f.needs_key?'on':''} onClick={()=>setF(p=>({...p,needs_key:false}))}>ไม่ใช้ key</button><button type="button" className={f.needs_key?'on':''} onClick={()=>setF(p=>({...p,needs_key:true}))}><Icon n="key" size={13}/>ใช้ key (HWID)</button></div></div>}
         {!admin&&lock&&<span className="mq-note"><Icon n="bolt" size={13}/>หัก <b>{lockCost.toLocaleString()}</b> TOKEN{tokens!==null&&<> · เหลือ <b>{tokens.toLocaleString()}</b></>}</span>}
       </div>
       <button className="mq-go" disabled={busy||!human}>{busy?'กำลังสร้าง...':human?<>สร้างลิงก์<Icon n="spark" size={15}/></>:'กำลังตรวจสอบ...'}</button>

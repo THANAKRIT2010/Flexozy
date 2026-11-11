@@ -119,3 +119,26 @@ body{background:#070707}.ocean{position:fixed;inset:-12px;z-index:-1;pointer-eve
 .mq-f label{display:flex;align-items:center;gap:7px;font-size:12px;color:#a3a3a3;margin-bottom:7px}.mq-f input{width:100%;padding:10px 13px;border-radius:8px;background:#0a0a0a;border:1px solid #262626;font-size:13px}.mq-f input:focus{border-color:#555;outline:0}.mq-ts{margin-top:auto}
 .mq-ok{display:flex;align-items:center;gap:12px}.mq-ok b{display:block;font:700 16px var(--hd)}.mq-ok small{color:var(--dim)}
 .cf-gut{padding-top:16px}
+/* ===== v20.5 แก้: คลื่นโดนพื้นหลัง html ทับ · tab มีกรอบ · มือถือ ===== */
+html{background:#070707!important}body{background:transparent!important;overflow-x:clip}
+.ocean canvas{filter:blur(2.5px) brightness(1.3) contrast(1.08)}
+/* tab (segmented) กรอบไล่เฉด + ปุ่มที่เลือกเป็นแผ่นสว่าง */
+.mq-grp{display:flex;flex-direction:column;gap:6px}.mq-grp>small{padding-left:6px;font:600 10.5px var(--font);letter-spacing:.14em;text-transform:uppercase;color:#7a7a84}
+.mq-pills{padding:4px;gap:4px;border-radius:15px;border:1px solid transparent;background:linear-gradient(180deg,rgba(28,28,34,.88),rgba(9,9,13,.9)) padding-box,linear-gradient(135deg,rgba(255,255,255,.4),rgba(255,255,255,.06) 40%,rgba(255,255,255,.22)) border-box;box-shadow:0 14px 34px -14px #000,inset 0 1px 0 rgba(255,255,255,.1)}
+.mq-pills button{min-height:38px;padding:8px 18px;border-radius:11px;font-size:12.5px;font-weight:600;color:#8d8d97;transition:background .2s,color .2s,box-shadow .25s,transform .2s}.mq-pills button:hover{color:#fff;background:rgba(255,255,255,.07)}.mq-pills button:active{transform:scale(.96)}
+.mq-pills button.on{color:#0a0a0c;background:linear-gradient(180deg,#fff,#dcdce2);border-color:transparent;box-shadow:0 8px 22px -8px rgba(255,255,255,.55),inset 0 -2px 0 rgba(0,0,0,.12)}
+.fx.dz .dz-side nav a{border:1px solid transparent;border-radius:12px}.fx.dz .dz-side nav a:hover{border-color:rgba(255,255,255,.1)}.fx.dz .dz-side nav a.on{border-color:rgba(255,255,255,.2)}
+.rn-grid{grid-template-columns:repeat(auto-fill,minmax(min(290px,100%),1fr))}
+/* มือถือ */
+@media(max-width:860px){
+  .fx.dz .dz-side{position:fixed!important;z-index:60!important;background:rgba(10,9,16,.97);backdrop-filter:blur(22px)}
+  .fx.dz .dz-col{z-index:auto}.dz-page{max-width:100%}.dz-main{padding:14px 12px 34px}
+  .mq-controls{flex-direction:column;align-items:stretch;gap:12px}.mq-left{width:100%;gap:10px}.mq-grp{flex:1 1 100%}.mq-pills{display:flex}.mq-pills button{flex:1;justify-content:center;padding:8px 10px}.mq-go{width:100%;min-height:48px}
+  .mq-box{min-height:0}.mq-ed{min-height:300px;height:44vh}.mq-out{padding:14px}.mq-head{padding:0 10px}.mq-meta{display:none}.mq-code{font-size:11.5px}
+  .mq-f input,.mq-nm input,.tp-in input,.lf-f input{font-size:16px}
+  .tp-main,.tp-hist{padding:16px!important}.tp-h{gap:10px}.tp-rate{width:100%;justify-content:center}.rn-top{gap:8px}.rn-st{flex:1 1 30%;padding:10px 12px}.rn-top .grow{display:none}.rn-top .dz-find{flex:1 1 100%}
+  .dz-hero{padding:3vh 14px 24px}.dz-hero h1{font-size:clamp(38px,12vw,60px)}.dz-hero>p{font-size:15px}.dz-pub,.dz-feat{grid-template-columns:1fr}.dz-land .dz-lbar{padding:14px 16px}
+  .fx.dz .dz-card,.fx.dz .dz-row,.fx.dz .dz-feat li{transform:none!important}.fx.dz .dz-row:hover{transform:none}
+  .rx-core b{font-size:12.5px}.mdl-box{width:calc(100vw - 20px)!important;max-height:90dvh;overflow:auto}
+}
+@media(max-width:420px){.mq-pills button{font-size:12px;padding:8px 6px}.mq-pills button svg{display:none}.lf-tags span{font-size:11px}}
