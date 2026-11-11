@@ -172,3 +172,7 @@ html{background:#070707!important}body{background:transparent!important;overflow
 .bn-ip{display:block;font:600 15px 'JetBrains Mono',Consolas,monospace;cursor:pointer;overflow:hidden;text-overflow:ellipsis}.bn-d{color:#6f7280}
 .bn-red{border-color:rgba(244,63,94,.55)!important;box-shadow:0 0 0 1px rgba(244,63,94,.25),0 18px 40px -22px rgba(244,63,94,.6)}.bn-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.bn-tags i{font-style:normal;font-size:11px;padding:3px 9px;border-radius:99px;background:rgba(244,63,94,.18);border:1px solid rgba(244,63,94,.5);color:#fda4af}
 .rn-f .bn-all{background:linear-gradient(180deg,#fb7185,#e11d48);border-color:transparent;color:#fff;box-shadow:0 8px 20px -8px rgba(225,29,72,.8)}.rn-f .bn-all:hover{filter:brightness(1.1)}.bn-pill{background:rgba(244,63,94,.18)!important;color:#fda4af!important}
+/* แท็บในหน้าแอดมิน: ลิงก์ทั้งหมด / สร้างลิงก์ใหม่ */
+.ad-tabs{margin-bottom:16px;align-items:flex-start}.ad-tabbody{animation:x-sw .45s var(--ease-o)}
+.mq-pills button em{font-style:normal;margin-left:8px;padding:1px 8px;border-radius:99px;font-size:11px;font-weight:700;background:rgba(255,255,255,.12);color:#cfd2dc}.mq-pills button.on em{background:rgba(0,0,0,.14);color:#0a0a0c}
+@media(max-width:860px){.ad-tabs .mq-pills{display:flex;width:100%}.ad-tabs .mq-pills button{flex:1;justify-content:center}}

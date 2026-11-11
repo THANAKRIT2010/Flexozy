@@ -6,16 +6,21 @@ import { ls, failover } from '@/lib/snippets';
 import { Avatar, Modal, ProfileModal, PlayersList } from '../Ui';
 import { api, send, useCopy, Panel, Pill, Empty } from './kit';
 export default function LinksPage(){
-  const [d, setD] = useState({ stats:{ links:0, views:0, owners:0 }, links:[], hosts:[] }), [q, setQ] = useState(''), [prof, setProf] = useState(null), [pl, setPl] = useState(null), [ed, setEd] = useState(null), [ready, setReady] = useState(false), [cp, copy] = useCopy();
+  const [d, setD] = useState({ stats:{ links:0, views:0, owners:0 }, links:[], hosts:[] }), [q, setQ] = useState(''), [prof, setProf] = useState(null), [pl, setPl] = useState(null), [ed, setEd] = useState(null), [ready, setReady] = useState(false), [cp, copy] = useCopy(), [tab, setTab] = useState('list');
+  useEffect(() => { const f = () => setTab(location.hash === '#create' ? 'create' : 'list'); f(); addEventListener('hashchange', f); return () => removeEventListener('hashchange', f); }, []);
+  const go = (t) => { location.hash = t === 'create' ? 'create' : ''; setTab(t); };
   const load = useCallback(async () => { const r = await api('/api/admin/vault'); if(r.ok) setD(r.data); setReady(true); }, []);
   useEffect(() => { load(); }, [load]);
   const del = async (c) => { if(!confirm(`ลบลิงก์ ${c} ?`)) return; await api('/api/admin/vault/' + c, { method:'DELETE' }); load(); };
   const toggleKey = async (v) => { await send('/api/admin/vault/' + v.code, { needs_key:!v.needs_key }, 'PATCH'); load(); };
   const rows = d.links.filter(v => (v.code + v.title + (v.owner_name || '')).toLowerCase().includes(q.toLowerCase()));
   return (<>
-    <div className="ad-grid ad-g2">
-      <Panel title="สร้างลิงก์ใหม่" sub="กำหนดโค้ดลิงก์เองได้"><LinkForm endpoint="/api/admin/vault" admin onCreated={load}/></Panel>
-      <Panel title="ลิงก์ทั้งหมด" sub={`${rows.length} จาก ${d.links.length} · ยอดรวม ${d.stats.views.toLocaleString()}`}
+    <div className="mq-grp ad-tabs"><div className="mq-pills" role="tablist" aria-label="ลิงก์สคริปต์">
+      <button type="button" role="tab" aria-selected={tab === 'list'} className={tab === 'list' ? 'on' : ''} onClick={() => go('list')}>ลิงก์ทั้งหมด<em>{d.links.length}</em></button>
+      <button type="button" role="tab" aria-selected={tab === 'create'} className={tab === 'create' ? 'on' : ''} onClick={() => go('create')}>+ สร้างลิงก์ใหม่</button></div></div>
+    <div key={tab} className="ad-tabbody">
+      {tab === 'create' && <Panel title="สร้างลิงก์ใหม่" sub="กำหนดโค้ดลิงก์เองได้ · ใส่รหัสผ่าน · ผูก key (HWID)"><LinkForm endpoint="/api/admin/vault" admin onCreated={load}/></Panel>}
+      {tab === 'list' && <Panel title="ลิงก์ทั้งหมด" sub={`${rows.length} จาก ${d.links.length} · ยอดรวม ${d.stats.views.toLocaleString()}`}
         actions={<input className="search" placeholder="ค้นหาโค้ด / ชื่อ / ผู้สร้าง" value={q} onChange={e => setQ(e.target.value)}/>}>
         <div className="ad-tw"><table>
           <thead><tr><th>ลิงก์</th><th>ผู้สร้าง</th><th className="num">ยอดรัน</th><th>สถานะ</th><th style={{ textAlign:'right' }}>จัดการ</th></tr></thead>
@@ -36,7 +41,7 @@ export default function LinksPage(){
                 <a className="btn ghost sm" href={`/vault/${v.code}`}>เปิด</a>
                 <button className="btn danger sm" onClick={() => del(v.code)}>ลบ</button></div></td></tr>)}
           </tbody></table></div>
-      </Panel>
+      </Panel>}
     </div>
     {prof && <ProfileModal p={prof} links={d.links.filter(v => v.owner_id === prof.id)} onClose={() => setProf(null)} onPlayers={c => { setProf(null); setPl(c); }}/>}
     {ed && <EditLink code={ed} admin onClose={() => setEd(null)} onSaved={load}/>}
