@@ -1,7 +1,6 @@
 import './globals.css';
 import './dash.css';
 import './fx.css';
-import './keypage.css';
 import RouteFx from '@/components/RouteFx';
 import ClickFx from '@/components/ClickFx';
 import { getSite, themeVars, DEFAULT_SITE } from '@/lib/site';
