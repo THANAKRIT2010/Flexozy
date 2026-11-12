@@ -43,7 +43,12 @@ async function run(req){
     if(!okOrigin && !(!o && req.headers.get('sec-fetch-site') === 'same-origin')) return forbidden();
   }
   if(looksAutomated(req)) return forbidden();
-  if(!OPEN.test(path) && !await checkPass(req.cookies.get(PASS_COOKIE)?.value, ua))
+  // v25: ปิดหน้า "กำลังทำการตรวจสอบความปลอดภัย" ไว้ก่อนเป็นค่าเริ่มต้น (CHALLENGE_GATE=0)
+  // สาเหตุที่ต้องปิด: หน้านี้ค้างวนลูปไม่จบสำหรับทุกคน (รวมแอดมิน) เข้าเว็บ/ล็อกอินไม่ได้เลย
+  // ต้นเหตุที่เป็นไปได้มากที่สุด: Turnstile (Cloudflare) ตั้งค่าไว้แต่ site key ไม่ตรงโดเมน หรือ verify ไม่ผ่าน
+  // ผนวกกับ TURNSTILE_STRICT=1 (ถ้าตั้งไว้) → /api/challenge/verify ปฏิเสธทุกครั้งที่ไม่มี token จาก Turnstile แม้ proof-of-work ถูกต้อง = ล็อกถาวร
+  // เปิดกลับมาใช้ได้ด้วย CHALLENGE_GATE=1 (แนะนำให้ตรวจ TURNSTILE_SECRET_KEY/NEXT_PUBLIC_TURNSTILE_SITE_KEY ให้ตรงโดเมนก่อน และเอา TURNSTILE_STRICT ออกถ้าไม่มั่นใจ)
+  if(process.env.CHALLENGE_GATE === '1' && !OPEN.test(path) && !await checkPass(req.cookies.get(PASS_COOKIE)?.value, ua))
     return path.startsWith('/api/') ? forbidden() : challengePage(host || 'flexozy.xyz');
   const vm = path.match(/^\/vault\/([^/=%]+)(?:=|%3[Dd])/);
   if(vm){ const u = req.nextUrl.clone(); u.pathname = `/vault/${vm[1]}`; return NextResponse.rewrite(u); }

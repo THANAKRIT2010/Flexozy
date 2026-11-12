@@ -176,3 +176,5 @@ html{background:#070707!important}body{background:transparent!important;overflow
 .ad-tabs{margin-bottom:16px;align-items:flex-start}.ad-tabbody{animation:x-sw .45s var(--ease-o)}
 .mq-pills button em{font-style:normal;margin-left:8px;padding:1px 8px;border-radius:99px;font-size:11px;font-weight:700;background:rgba(255,255,255,.12);color:#cfd2dc}.mq-pills button.on em{background:rgba(0,0,0,.14);color:#0a0a0c}
 @media(max-width:860px){.ad-tabs .mq-pills{display:flex;width:100%}.ad-tabs .mq-pills button{flex:1;justify-content:center}}
+/* v24: ชิป "แบนอัตโนมัติ" ในแท็บคำขอ & แบน */
+.bn-auto-st b{color:#fda4af}

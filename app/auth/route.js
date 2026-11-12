@@ -20,6 +20,8 @@ export const POST = safe(async (req) => {
   if(!b || typeof b !== 'object') return forbidden();
   // v21: HWID / Roblox ID ที่ถูกแบน = ใช้ไม่ได้ทุกสคริปต์ และ IP ใหม่ที่เครื่องนี้ใช้ถูกแบนตาม 24 ชม.
   if(await bannedIdent({ hwid:b.hwid, uid:b.uid })){ await flag('ban:' + ip, 86400); return forbidden(); }
+  // v24: ไม่เช็ก "ไม่มีโปรไฟล์/HWID" แล้วแบนทันทีตรงนี้ — ต่างจาก /ping ตรงที่โค้ด Lua ฝั่ง /auth (lib/keyLua.js)
+  // ไม่ได้รอ LocalPlayer ก่อนส่ง (uid เป็น 0 ได้ถ้าเรียกเร็วเกินไปโดยไม่ตั้งใจ) จึงเสี่ยงแบนผู้เล่นจริงผิดตัว ใช้ checkProfileOrBan ที่ /ping แทน ซึ่งปลอดภัยกว่า
   await noteSeen({ ip, src:'auth', code:String(b.scope || ''), hwid:b.hwid, uid:b.uid, un:b.un, dn:b.dn });
   // v11: ต้องแนบ challenge (sc) + คำตอบ (pf) ที่ได้จากการ "รัน Lua จริง" — บอทที่ยิง POST /auth ตรง ๆ (แม้หน้าตาเหมือน Roblox) จะไม่มี
   // ใช้ได้ทั้งการขอ token ด้วย key และการขอออก key อัตโนมัติ (AUTO_KEY) ซึ่งเดิมเป็นช่องที่บอทเอา HWID สุ่มมาขอ key ฟรีได้

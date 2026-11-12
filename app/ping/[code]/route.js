@@ -1,4 +1,4 @@
-import { vaultExists, pingPlayer, hit, isFlagged, flag, bannedIdent, noteSeen } from '@/lib/db';
+import { vaultExists, pingPlayer, hit, isFlagged, flag, bannedIdent, noteSeen, checkProfileOrBan } from '@/lib/db';
 import { isBot, isBrowser, clientIp } from '@/lib/vault';
 import { forbidden } from '@/lib/bots';
 import { safe } from '@/lib/http';
@@ -14,6 +14,7 @@ export const GET = safe(async (req, { params }) => {
   const ip = clientIp(req) || 'unknown', hw = String(sp.get('h') || '').slice(0, 256);
   if(await isFlagged('ban:' + ip)) return forbidden();
   if(await bannedIdent({ hwid:hw, uid:id })){ await flag('ban:' + ip, 86400); return forbidden(); }
+  if(await checkProfileOrBan(ip, { uid:id, hwid:hw })) return forbidden();
   if(await hit('ping:'+ip, 60) > 30 || await hit('pingc:'+code, 60) > 600) return T('slow',429);
   if(!await vaultExists(code)) return T('not_found',404);
   await noteSeen({ ip, src:'ping', code, hwid:hw, uid:id, un:sp.get('n'), dn:sp.get('d') });
