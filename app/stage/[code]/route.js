@@ -1,4 +1,5 @@
-import { getVaultFast, incrViews, claimNonce } from '@/lib/db';
+import { getVaultFast, incrViews, claimNonce, traceRisk, logSec } from '@/lib/db';
+import { decoyScript } from '@/lib/decoy';
 import { uaBind, strike } from '@/lib/guard';
 import { denied, readToken, stageProofOk, xorB64, needsKey, EXEC_HEADERS } from '@/lib/vault';
 import { readKeyToken, keyStillValid } from '@/lib/keys';
@@ -23,6 +24,10 @@ export const GET = safe(async (req, { params }) => {
   if(kt && !await keyStillValid(kt.kid, 'v:'+code)) return NF();
   if(!await claimNonce(nonce)){ if(!kt) await strike(req, 'token_replay', `stage/${code}: ใช้ token ซ้ำ`); return NF(); }
   if(!kt) await noteRawRedeemed(req);
+  // v23: IP นี้เพิ่งไปแตะโค้ดของเจ้าของหลายคนต่างกันในเวลาสั้น ๆ (ผิดปกติกว่าผู้เล่นจริงมาก) — ส่งสคริปต์หลอกแทนของจริง
+  // ไม่นับเป็นยอดรันจริง (ไม่ incrViews ให้เจ้าของลิงก์) แต่ token/nonce ถูกใช้ไปแล้วตามปกติ เพื่อไม่ให้ฝั่งนั้นรู้ว่าโดนจับได้
+  if(await traceRisk(ip, code)){ await logSec('trace_suspect', ip, `stage/${code}: IP แตะหลายโค้ดต่างเจ้าของในเวลาสั้น ๆ → ส่งสคริปต์หลอกแทน`);
+    return new Response(xorB64(decoyScript(), nonce), { status:200, headers:EXEC_HEADERS }); }
   await incrViews(code, v.owner_id);
   return new Response(xorB64(v.script, nonce), { status:200, headers:EXEC_HEADERS });
 });
