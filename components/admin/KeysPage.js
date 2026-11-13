@@ -60,6 +60,7 @@ export default function KeysPage(){
             {rows.map(k => { const [c, t] = stateOf(k); return <Fragment key={k.kid}><tr>
               <td><div style={{ display:'flex', gap:10, alignItems:'center' }}>{k.roblox_id ? <Avatar id={k.roblox_id}/> : null}<div><div className="t">{k.label || '(ไม่มีชื่อ)'}</div>
                 <div className="s">{k.hint}{k.runs > 0 && ` · รัน ${k.runs.toLocaleString()} ครั้ง`}</div>
+                {k.claimed_by && <div className="s" style={{ display:'flex', alignItems:'center', gap:6 }}>{k.claimed_by.discord_avatar ? <img src={k.claimed_by.discord_avatar} alt="" style={{ width:16, height:16, borderRadius:'50%' }}/> : null}<span style={{ color:'#8ea1ff' }}>Discord: {k.claimed_by.discord_name || k.claimed_by.discord_id}</span>{k.claims > 1 && ` · เคลม ${k.claims} ครั้ง`}</div>}
                 {k.roblox_id ? <div className="s"><a href={`https://www.roblox.com/users/${k.roblox_id}/profile`} target="_blank" rel="noreferrer">{k.roblox_dn ? `${k.roblox_dn} (@${k.roblox_name})` : `@${k.roblox_name || k.roblox_id}`}</a> · ID {k.roblox_id}</div> : <div className="s">ยังไม่มีโปรไฟล์ Roblox (ยังไม่เคยใช้)</div>}</div></div></td>
               <td><Pill tone={c}>{t}</Pill></td>
               <td><span className="s">{k.scopes.join(', ')}</span></td>
@@ -72,6 +73,7 @@ export default function KeysPage(){
                 <button className="btn danger sm" onClick={() => del(k.kid)}>ลบ</button></div></td></tr>
               {open === k.kid && <tr><td colSpan={8} className="sub">
                 <div className="s" style={{ marginBottom:8 }}>HWID จริง: {k.hw_raw ? <><b>{k.hw_raw}</b>{k.hw_src && ` (จาก ${k.hw_src})`}</> : '—'}{k.last_ip && ` · IP ล่าสุด ${k.last_ip}`}</div>
+                {k.claimed_by && <div className="s" style={{ marginBottom:8 }}>เคลมผ่าน Discord: <b>{k.claimed_by.discord_name || '—'}</b> (ID {k.claimed_by.discord_id}) · IP ตอนเคลมล่าสุด {k.claim_ip || '—'} · เคลม/ล็อกอินแล้ว {k.claims} ครั้ง{k.first_claim ? ` · ครั้งแรก ${fmtDate(k.first_claim)}` : ''}</div>}
                 {(k.profiles || []).length > 0 && <div style={{ display:'flex', gap:14, flexWrap:'wrap', marginBottom:10 }}>{k.profiles.map(p => <a key={p.id} href={`https://www.roblox.com/users/${p.id}/profile`} target="_blank" rel="noreferrer" style={{ display:'flex', gap:8, alignItems:'center' }}><Avatar id={p.id} size={30}/><span className="s">{p.dn ? `${p.dn} (@${p.name})` : `@${p.name || p.id}`}<br/>ID {p.id} · {ago(p.ts)}</span></a>)}</div>}
                 {k.events.length === 0 ? <span className="dim">ไม่มีประวัติ</span> : k.events.map((e, i) => <div key={i} className="s">{fmtDate(e.ts)} · {e.t}{e.ip && ` · ${e.ip}`}{e.scope && ` · ${e.scope}`}</div>)}</td></tr>}</Fragment>; })}
           </tbody></table></div>

@@ -9,7 +9,9 @@ export async function GET(){
   if(!await guard()) return deny();
   const [keys, use] = await Promise.all([listKeys(), listKeyUse()]);
   return NextResponse.json(keys.sort((a,b)=>b.created_at-a.created_at).map(k => { const u = use[k.kid] || {};
-    return { ...k, bound: !!u.hwid, hw: u.hwid ? u.hwid.slice(0,8) : '', hw_raw:u.hw_raw||'', hw_src:u.hw_src||'', roblox_dn:u.roblox_dn||'', profiles:u.profiles||[], uses:u.uses||0, runs:u.runs||0, roblox_id:u.roblox_id||'', roblox_name:u.roblox_name||'', denied:u.denied||0, last_used:u.last_used||0, last_ip:u.last_ip||'', events:u.events||[] }; }));
+    return { ...k, bound: !!u.hwid, hw: u.hwid ? u.hwid.slice(0,8) : '', hw_raw:u.hw_raw||'', hw_src:u.hw_src||'', roblox_dn:u.roblox_dn||'', profiles:u.profiles||[], uses:u.uses||0, runs:u.runs||0, roblox_id:u.roblox_id||'', roblox_name:u.roblox_name||'', denied:u.denied||0, last_used:u.last_used||0, last_ip:u.last_ip||'',
+      // v25: โปรไฟล์ Discord ที่เคลมคีย์นี้ (ถ้าออกให้ผ่านระบบล็อกอิน Discord) + IP ตอนเคลม + จำนวนครั้งที่เคลม/ล็อกอินแล้วได้คีย์เดิมคืน
+      claimed_by:u.claimed_by||null, claim_ip:u.claim_ip||'', claims:u.claims||0, first_claim:u.first_claim||0, last_claim:u.last_claim||0, events:u.events||[] }; }));
 }
 export async function POST(req){ // body: { label, days (0=ไม่หมดอายุ), scopes: ['*'] | ['hub'] | ['v:CODE'], count (1-50) }
   if(!await guard()) return deny();

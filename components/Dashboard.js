@@ -6,6 +6,7 @@ import EditLink from '@/components/EditLink';
 import TopupCard from '@/components/TopupCard';
 import RunnersPanel from '@/components/RunnersPanel';
 import BansPanel from '@/components/BansPanel';
+import MyKeyPanel from '@/components/MyKeyPanel';
 import Icon from '@/components/Icons';
 import { Spark, AreaChart, fmt, dlabel } from '@/components/Charts';
 
@@ -16,8 +17,9 @@ const VIEWS = {
   bans:{ t:'คำขอ & แบน', s:'ดูคนที่ส่งคำขอ/รันสคริปต์ (IP · HWID · Roblox) แล้วแบนได้ — แบนแล้วใช้ลิงก์หรือสคริปต์ผ่าน API ไม่ได้เลย', i:'shield' },
   runners:{ t:'โปรไฟล์ผู้รัน Loader', s:'ดูโปรไฟล์ Roblox ที่รัน Loader ด้วย key — เห็นได้จากหน้านี้เลย ไม่ต้องเข้าหลังบ้านก่อน', i:'users' },
   tokens:{ t:'TOKEN & เติมเงิน', s:'เติม TOKEN ด้วยซอง TrueMoney ดูยอดคงเหลือและกติกาการใช้', i:'bolt' },
+  mykey:{ t:'คีย์ของคุณ', s:'คีย์ที่ผูกกับบัญชี Discord นี้ ใช้เปิด Hub ที่ต้องใช้ key ได้ทันที', i:'key' },
 };
-const NAV = [[null, ['overview']], ['สคริปต์', ['create', 'links']], ['บัญชี', ['tokens']]];
+const NAV = [[null, ['overview']], ['สคริปต์', ['create', 'links']], ['บัญชี', ['tokens', 'mykey']]];
 const SER = [{ key:'r', name:'ยอดรัน', color:'#a78bfa' }, { key:'l', name:'ลิงก์ใหม่', color:'#f0abfc' }, { key:'k', name:'ล็อกรหัส', color:'#67e8f9' }];
 const sum = (a) => a.reduce((x, y) => x + y, 0);
 
@@ -51,10 +53,10 @@ export default function Dashboard({ site }){
 
   /* ---------- ยังไม่ล็อกอิน ---------- */
   if(me === null) return (<div className="fx dz dz-land"><header className="dz-lbar"><a className="dz-brand" href="/"><img src="/images/flexozy-logo.png" alt=""/><b>{site.hero.title}</b></a><span className="grow"/>
-      <a className="dz-btn pri" href="/login/discord">เข้าสู่ระบบด้วย Discord</a></header>
+      <a className="dz-btn pri" href="/login">เข้าสู่ระบบด้วย Discord</a></header>
     <main className="dz-hero">{site.hero.badge && <span className="dz-badge"><i/>{site.hero.badge}</span>}
       <h1>{site.hero.title}</h1><p>{site.hero.tagline}</p>
-      <a className="dz-btn pri lg" href="/login/discord">เริ่มต้นใช้งาน <Icon n="arrow" size={18}/></a>
+      <a className="dz-btn pri lg" href="/login">เริ่มต้นใช้งาน <Icon n="arrow" size={18}/></a>
       {site.stats.length > 0 && <div className="dz-pub">{site.stats.map(s => <div className="dz-card" key={s.id}><div className="dz-card-h"><span>{s.label}</span><i><Icon n={s.icon} size={15}/></i></div><b>{fmt(s.value)}</b><em>{s.unit || '\u00a0'}</em></div>)}</div>}
       <ul className="dz-feat"><li><Icon n="shield" size={18}/><b>ป้องกันการดึงสคริปต์</b><span>ซอร์สส่งผ่าน token ครั้งเดียว ผูก IP + UA คนที่ดึงด้วย HttpGet ตรงๆ จะได้แค่ stub ไม่มีซอร์ส</span></li>
         <li><Icon n="lock" size={18}/><b>ล็อกรหัสผ่านได้</b><span>ซ่อนซอร์สจากหน้าเว็บ แต่ยังรันในเกมได้ตามปกติ</span></li>
@@ -128,6 +130,7 @@ export default function Dashboard({ site }){
               <div className="dz-ra"><button className="dz-btn" onClick={() => copy(ls(v.raw_url), v.code)}>{cp === v.code ? 'คัดลอกแล้ว ✓' : 'Loadstring'}</button><a className="dz-btn" href={v.raw_url} target="_blank" rel="noreferrer">Raw</a>
                 <button className="dz-btn" onClick={() => setEd(v.code)}>แก้ไข</button><button className="dz-btn" onClick={() => setPl(v.code)}>ผู้เล่น</button><a className="dz-btn" href={`/vault/${v.code}`}>ดูโค้ด</a><button className="dz-btn dng" onClick={() => del(v.code)}>ลบ</button></div></div>)}</div>}</>}
 
+        {view === 'mykey' && <div className="lf-wrap"><MyKeyPanel/></div>}
         {view === 'tokens' && <div className="dz-tokens"><div style={{ gridColumn:'1/-1' }}><TopupCard onDone={reload}/></div>
           <div className="dz-card dz-bal"><div className="dz-card-h"><span>ยอดคงเหลือ</span><i><Icon n="bolt" size={15}/></i></div><b>{tok === null || tok === undefined ? '–' : tok.toLocaleString()}</b><small>TOKEN</small>
             <div className="dz-card-f"><b>{tok == null ? '–' : Math.floor(tok / cost)}</b> ลิงก์ล็อกรหัสที่ฝากได้อีก</div></div>

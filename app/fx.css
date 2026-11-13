@@ -178,3 +178,5 @@ html{background:#070707!important}body{background:transparent!important;overflow
 @media(max-width:860px){.ad-tabs .mq-pills{display:flex;width:100%}.ad-tabs .mq-pills button{flex:1;justify-content:center}}
 /* v24: ชิป "แบนอัตโนมัติ" ในแท็บคำขอ & แบน */
 .bn-auto-st b{color:#fda4af}
+/* คีย์ของฉัน (ออกให้ผ่าน Discord) */
+.mk-key{display:flex;align-items:center;gap:10px;padding:14px 16px;border-radius:14px;background:#05040b;border:1px solid rgba(255,255,255,.14)}.mk-key code{flex:1;min-width:0;overflow-x:auto;white-space:nowrap;font:13px 'JetBrains Mono',Consolas,monospace;color:#86efac}
