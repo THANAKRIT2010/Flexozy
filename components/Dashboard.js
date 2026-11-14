@@ -130,7 +130,7 @@ export default function Dashboard({ site }){
               <div className="dz-ra"><button className="dz-btn" onClick={() => copy(ls(v.raw_url), v.code)}>{cp === v.code ? 'คัดลอกแล้ว ✓' : 'Loadstring'}</button><a className="dz-btn" href={v.raw_url} target="_blank" rel="noreferrer">Raw</a>
                 <button className="dz-btn" onClick={() => setEd(v.code)}>แก้ไข</button><button className="dz-btn" onClick={() => setPl(v.code)}>ผู้เล่น</button><a className="dz-btn" href={`/vault/${v.code}`}>ดูโค้ด</a><button className="dz-btn dng" onClick={() => del(v.code)}>ลบ</button></div></div>)}</div>}</>}
 
-        {view === 'mykey' && <div className="lf-wrap"><MyKeyPanel/></div>}
+        {view === 'mykey' && <div className="lf-wrap"><MyKeyPanel me={me}/></div>}
         {view === 'tokens' && <div className="dz-tokens"><div style={{ gridColumn:'1/-1' }}><TopupCard onDone={reload}/></div>
           <div className="dz-card dz-bal"><div className="dz-card-h"><span>ยอดคงเหลือ</span><i><Icon n="bolt" size={15}/></i></div><b>{tok === null || tok === undefined ? '–' : tok.toLocaleString()}</b><small>TOKEN</small>
             <div className="dz-card-f"><b>{tok == null ? '–' : Math.floor(tok / cost)}</b> ลิงก์ล็อกรหัสที่ฝากได้อีก</div></div>

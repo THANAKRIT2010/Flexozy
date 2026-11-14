@@ -181,9 +181,20 @@ html{background:#070707!important}body{background:transparent!important;overflow
 /* คีย์ของฉัน (ออกให้ผ่าน Discord) */
 .mk-key{display:flex;align-items:center;gap:10px;padding:14px 16px;border-radius:14px;background:#05040b;border:1px solid rgba(255,255,255,.14)}.mk-key code{flex:1;min-width:0;overflow-x:auto;white-space:nowrap;font:13px 'JetBrains Mono',Consolas,monospace;color:#86efac}
 /* รับคีย์ฟรี: เช็กลิสต์ 2 ขั้นตอน */
-.mk-gate{list-style:none;padding:0;margin:4px 0 18px;display:grid;gap:12px}.mk-gate li{display:flex;gap:14px;padding:16px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1)}
-.mk-n{flex:none;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font:700 13px var(--hd);color:var(--on-main);background:linear-gradient(135deg,var(--g1),var(--g2))}
-.mk-gate b{display:block;font-size:14px;margin-bottom:2px}.mk-gate small{display:block;color:var(--dim);font-size:12px;margin-bottom:2px}
-.mk-gate .dz-btn{display:inline-flex}.mk-ck{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13px;color:#d4d4dc;cursor:pointer;position:relative}.mk-ck input{position:absolute;opacity:0;width:18px;height:18px;cursor:pointer}
+/* v25.6: หน้า "รับ/ต่ออายุคีย์" สไตล์เวลาคงเหลือ (การ์ดสถานะ + ลิสต์งาน) */
+.mk{display:flex;flex-direction:column;gap:18px;max-width:640px}
+.mk-hey h2{margin:0 0 4px;font:800 26px var(--hd)}.mk-hey p{margin:0;color:var(--dim);font-size:13.5px}
+.mk-bal{padding:22px!important}.mk-bal-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;font:600 13px var(--font);color:#d4d4dc}
+.mk-pill{font-size:11px;padding:4px 10px;border-radius:99px;background:rgba(52,211,153,.18);color:#6ee7b7;border:1px solid rgba(52,211,153,.4)}.mk-pill.off{background:rgba(244,63,94,.18);color:#fda4af;border-color:rgba(244,63,94,.4)}
+.mk-time{font:800 38px var(--hd);background:linear-gradient(180deg,#fff,var(--main-soft));-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:-.02em}
+.mk-bar{height:6px;border-radius:99px;background:rgba(255,255,255,.08);margin:12px 0 8px;overflow:hidden}.mk-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--g1),var(--g2));border-radius:99px;transition:width .4s}
+.mk-sub{font-size:12.5px;color:var(--dim)}.mk-none{display:flex;flex-direction:column;align-items:center;gap:6px;padding:20px 0;color:var(--dim);text-align:center}.mk-none svg{color:var(--main-soft);margin-bottom:4px}.mk-none b{color:#fff;font-size:15px}
+.mk-earn{padding:0}.mk-earn-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:0 2px 10px}.mk-earn-h>span{font:700 15px var(--hd)}.mk-earn-h small{color:var(--dim);font-size:12px}
+.mk-row{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);margin-bottom:10px}
+.mk-ic{flex:none;width:40px;height:40px;border-radius:11px;display:grid;place-items:center;color:#fff;box-shadow:0 8px 18px -6px rgba(0,0,0,.6)}
+.mk-row-t{flex:1;min-width:0}.mk-row-t b{display:block;font-size:14px}.mk-row-t small{display:block;color:var(--dim);font-size:11.5px;margin-top:2px}
+.mk-start{flex:none;padding:8px 16px;border-radius:10px;background:#fff;color:#0a0a0c;font:700 12.5px var(--font);text-decoration:none;transition:filter .15s}.mk-start:hover{filter:brightness(.92)}
+.mk-ck{display:flex;align-items:center;gap:8px;font-size:13px;color:#d4d4dc;cursor:pointer;position:relative}.mk-ck input{position:absolute;opacity:0;width:38px;height:22px;cursor:pointer}
+.mk-go{width:100%;margin-top:4px}.mk-keybox{padding:18px 20px!important}
 .mk-ck .cf-tg{width:38px;height:22px;border-radius:99px;background:rgba(255,255,255,.14);position:relative;transition:.2s;flex:none}.mk-ck .cf-tg i{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s}
 .mk-ck input:checked+.cf-tg{background:var(--g1)}.mk-ck input:checked+.cf-tg i{transform:translateX(16px)}
