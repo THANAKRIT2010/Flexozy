@@ -6,7 +6,6 @@ import EditLink from '@/components/EditLink';
 import TopupCard from '@/components/TopupCard';
 import RunnersPanel from '@/components/RunnersPanel';
 import BansPanel from '@/components/BansPanel';
-import MyKeyPanel from '@/components/MyKeyPanel';
 import Icon from '@/components/Icons';
 import { Spark, AreaChart, fmt, dlabel } from '@/components/Charts';
 
@@ -17,9 +16,8 @@ const VIEWS = {
   bans:{ t:'คำขอ & แบน', s:'ดูคนที่ส่งคำขอ/รันสคริปต์ (IP · HWID · Roblox) แล้วแบนได้ — แบนแล้วใช้ลิงก์หรือสคริปต์ผ่าน API ไม่ได้เลย', i:'shield' },
   runners:{ t:'โปรไฟล์ผู้รัน Loader', s:'ดูโปรไฟล์ Roblox ที่รัน Loader ด้วย key — เห็นได้จากหน้านี้เลย ไม่ต้องเข้าหลังบ้านก่อน', i:'users' },
   tokens:{ t:'TOKEN & เติมเงิน', s:'เติม TOKEN ด้วยซอง TrueMoney ดูยอดคงเหลือและกติกาการใช้', i:'bolt' },
-  mykey:{ t:'คีย์ของคุณ', s:'คีย์ที่ผูกกับบัญชี Discord นี้ ใช้เปิด Hub ที่ต้องใช้ key ได้ทันที', i:'key' },
 };
-const NAV = [[null, ['overview']], ['สคริปต์', ['create', 'links']], ['บัญชี', ['tokens', 'mykey']]];
+const NAV = [[null, ['overview']], ['สคริปต์', ['create', 'links']], ['บัญชี', ['tokens']]];
 const SER = [{ key:'r', name:'ยอดรัน', color:'#a78bfa' }, { key:'l', name:'ลิงก์ใหม่', color:'#f0abfc' }, { key:'k', name:'ล็อกรหัส', color:'#67e8f9' }];
 const sum = (a) => a.reduce((x, y) => x + y, 0);
 
@@ -97,7 +95,7 @@ export default function Dashboard({ site }){
         <span className="grow"/>
         <button className="dz-search" onClick={() => setPal(true)}><Icon n="eye" size={15}/><span>ค้นหา</span><kbd>Ctrl</kbd><kbd>K</kbd></button>
         <div className="dz-dd" ref={menuRef}><button className="dz-sel" onClick={() => setMenu(m => !m)}><Icon n="user" size={15}/><span>{me.username}</span><Icon n="down" size={14}/></button>
-          {menu && <div className="dz-menu"><button onClick={() => { setMenu(false); setProf(true); }}><Icon n="user" size={15}/>โปรไฟล์</button>{me.is_admin && <a href="/admin"><Icon n="shield" size={15}/>หลังบ้านแอดมิน</a>}<a href="/logout"><Icon n="logout" size={15}/>ออกจากระบบ</a></div>}</div>
+          {menu && <div className="dz-menu"><button onClick={() => { setMenu(false); setProf(true); }}><Icon n="user" size={15}/>โปรไฟล์</button><a href="/claim"><Icon n="key" size={15}/>รับคีย์ของคุณ</a>{me.is_admin && <a href="/admin"><Icon n="shield" size={15}/>หลังบ้านแอดมิน</a>}<a href="/logout"><Icon n="logout" size={15}/>ออกจากระบบ</a></div>}</div>
         <button className="dz-tk" onClick={() => go('tokens')} title="TOKEN คงเหลือ"><Icon n="bolt" size={15}/>Tokens<b>{tok === null || tok === undefined ? '–' : tok.toLocaleString()}</b></button>
       </header>
 
@@ -129,8 +127,6 @@ export default function Dashboard({ site }){
               <div className="dz-rt"><b>{v.title}</b><small>{v.code} · {fmt(v.views)} รัน · {new Date(v.created_at).toLocaleDateString('th-TH')}{v.has_password && ' · ล็อกรหัส'}</small></div>
               <div className="dz-ra"><button className="dz-btn" onClick={() => copy(ls(v.raw_url), v.code)}>{cp === v.code ? 'คัดลอกแล้ว ✓' : 'Loadstring'}</button><a className="dz-btn" href={v.raw_url} target="_blank" rel="noreferrer">Raw</a>
                 <button className="dz-btn" onClick={() => setEd(v.code)}>แก้ไข</button><button className="dz-btn" onClick={() => setPl(v.code)}>ผู้เล่น</button><a className="dz-btn" href={`/vault/${v.code}`}>ดูโค้ด</a><button className="dz-btn dng" onClick={() => del(v.code)}>ลบ</button></div></div>)}</div>}</>}
-
-        {view === 'mykey' && <div className="lf-wrap"><MyKeyPanel me={me}/></div>}
         {view === 'tokens' && <div className="dz-tokens"><div style={{ gridColumn:'1/-1' }}><TopupCard onDone={reload}/></div>
           <div className="dz-card dz-bal"><div className="dz-card-h"><span>ยอดคงเหลือ</span><i><Icon n="bolt" size={15}/></i></div><b>{tok === null || tok === undefined ? '–' : tok.toLocaleString()}</b><small>TOKEN</small>
             <div className="dz-card-f"><b>{tok == null ? '–' : Math.floor(tok / cost)}</b> ลิงก์ล็อกรหัสที่ฝากได้อีก</div></div>
