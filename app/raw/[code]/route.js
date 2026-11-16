@@ -23,5 +23,5 @@ export const GET = safe(async (req, { params }) => {
     return new Response(stagedStub(await origin(), code, ip, uaBind(req)), T(200)); // ขั้นที่ 1: stub ที่ซีล + token ผูก IP + โจทย์ proof (นับ views ที่ขั้นที่ 2)
   }
   await incrViews(code, v.owner_id);
-  return new Response(tracker(await origin(), code) + v.script, T(200));
+  return new Response(tracker(await origin(), code, ip) + v.script, T(200));
 });

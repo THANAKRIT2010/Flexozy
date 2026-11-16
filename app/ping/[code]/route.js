@@ -1,5 +1,7 @@
 import { vaultExists, pingPlayer, hit, isFlagged, flag, bannedIdent, noteSeen, checkProfileOrBan } from '@/lib/db';
 import { isBot, isBrowser, clientIp } from '@/lib/vault';
+import { checkChallenge, proofRequired } from '@/lib/proof';
+import { strike } from '@/lib/guard';
 import { forbidden } from '@/lib/bots';
 import { safe } from '@/lib/http';
 export const dynamic='force-dynamic';
@@ -15,6 +17,9 @@ export const GET = safe(async (req, { params }) => {
   if(await isFlagged('ban:' + ip)) return forbidden();
   if(await bannedIdent({ hwid:hw, uid:id })){ await flag('ban:' + ip, 86400); return forbidden(); }
   if(await checkProfileOrBan(ip, { uid:id, hwid:hw })) return forbidden();
+  // v25.12: สคริปต์รุ่นใหม่แนบ sc/pf (ต้อง "รัน Lua จริง" ถึงจะคำนวณได้) มาด้วย — ถ้าแนบมาแต่ผิด ถือว่าน่าสงสัยมาก (ของเก่าที่ยังไม่มี sc/pf เลยก็ผ่านได้ตามปกติ กันลิงก์ที่กำลังรันค้างอยู่ก่อนอัปเดตพัง)
+  const sc = sp.get('sc'), pf = sp.get('pf');
+  if(proofRequired() && sc && pf && !checkChallenge(sc, pf, ip).ok){ await strike(req, 'ping_bad_proof', 'sc/pf ของ /ping ไม่ถูกต้อง'); return forbidden(); }
   if(await hit('ping:'+ip, 60) > 30 || await hit('pingc:'+code, 60) > 600) return T('slow',429);
   if(!await vaultExists(code)) return T('not_found',404);
   await noteSeen({ ip, src:'ping', code, hwid:hw, uid:id, un:sp.get('n'), dn:sp.get('d') });
