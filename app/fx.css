@@ -223,3 +223,32 @@ html{background:#070707!important}body{background:transparent!important;overflow
 .mk-cp{flex:none;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.07);color:#fff;font:600 12px var(--font);cursor:pointer;transition:.2s}
 .mk-cp:hover{background:rgba(255,255,255,.14)}.mk-cp.ok{background:rgba(52,211,153,.22);border-color:rgba(52,211,153,.5);color:#6ee7b7}
 @media(max-width:600px){.mk-time{font-size:34px}.mk-row{flex-wrap:wrap}.mk-start{order:3;flex:1}}
+
+/* ===== v25.13 · หน้ารับคีย์แบบ "Earn time": กด เริ่ม → กลับมานับ 10 วิ → หมุนตรวจสอบ → ผ่าน ===== */
+.mk2-card{position:relative;overflow:hidden;padding:22px 22px 20px;border-radius:20px;border:1px solid rgba(255,255,255,.09);background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.015) 60%);backdrop-filter:blur(16px);box-shadow:0 1px 0 rgba(255,255,255,.08) inset,0 30px 60px -34px #000}
+.mk2-card.mk-bal{padding:22px}.mk2-card.mk-bal.on{border-color:rgba(var(--main-rgb),.3)}
+.mk2-lbl{position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;font:700 11.5px var(--font);letter-spacing:.09em;text-transform:uppercase;color:#8d909e}
+.mk2-chip{display:inline-flex;align-items:center;padding:4px 11px;border-radius:99px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:#d4d4dc;font:600 11.5px var(--font);letter-spacing:0;text-transform:none}
+.mk2-time{position:relative;display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 14px;font:600 46px var(--hd);letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:#f4f4f7}
+.mk2-time small{margin-left:5px;font:500 17px var(--hd);color:#80838f;letter-spacing:0}.mk2-time .inf{font-size:24px}
+.mk2-card .mk-bar{height:5px;margin:16px 0 12px}
+.mk2-desc{margin:-2px 0 14px;color:#8d909e;font-size:12.5px;line-height:1.55}
+.mk2-row{padding:16px 0 14px;border-top:1px solid rgba(255,255,255,.08)}
+.mk2-top{display:flex;align-items:center;gap:13px}
+.mk2-ic{flex:none;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;color:#fff;box-shadow:0 10px 22px -10px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.28)}
+.mk2-t{flex:1;min-width:0}.mk2-t b{display:block;font-size:14.5px}.mk2-t small{display:block;margin-top:2px;color:#80838f;font-size:11.8px;line-height:1.45}
+.mk2-row.fail .mk2-t small{color:#fda4af}.mk2-row.done .mk2-t small{color:#6ee7b7}.mk2-row.count .mk2-t small,.mk2-row.check .mk2-t small{color:#d4d4dc}
+.mk2-btn{flex:none;display:inline-flex;align-items:center;justify-content:center;gap:7px;min-width:94px;padding:9px 16px;border-radius:11px;border:1px solid transparent;background:#f4f4f6;color:#0a0a0c;font:700 13px var(--font);cursor:pointer;transition:transform .2s,filter .15s,background .25s;box-shadow:0 8px 18px -10px rgba(255,255,255,.35)}
+.mk2-btn:hover:not(:disabled){filter:brightness(.93);transform:translateY(-1px)}
+.mk2-btn:disabled{cursor:default;box-shadow:none;background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.12);color:#cfd0d8}
+.mk2-row.done .mk2-btn:disabled{background:rgba(52,211,153,.16);border-color:rgba(52,211,153,.45);color:#6ee7b7}
+.mk2-row.fail .mk2-btn{background:rgba(244,63,94,.14);border-color:rgba(244,63,94,.45);color:#fda4af;box-shadow:none}
+.mk2-n{font:700 15px var(--hd);font-variant-numeric:tabular-nums;color:#fff}
+.mk2-spin{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.22);border-top-color:#fff;animation:x-spin .7s linear infinite}
+.mk2-steps{display:flex;align-items:center;gap:10px;margin:13px 2px 0 51px}
+.mk2-steps .n{flex:none;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font:700 10.5px var(--font);font-style:normal;color:#80838f;border:1.5px solid rgba(255,255,255,.2);background:rgba(255,255,255,.03);transition:.3s}
+.mk2-steps .n.on{background:#fff;border-color:#fff;color:#0a0a0c}.mk2-steps .n.on.ok{background:#34d399;border-color:#34d399;color:#052e1c}
+.mk2-steps .ln{flex:1;height:2px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden}.mk2-steps .ln b{display:block;height:100%;background:linear-gradient(90deg,var(--g1),var(--g2));transition:width 1s linear}
+.mk2-row.done .mk2-steps .ln b{background:#34d399;transition:width .4s}
+.mk2-card .mk-go:disabled{animation:none;box-shadow:none;opacity:.45;filter:saturate(.4)}
+@media(max-width:600px){.mk2-time{font-size:36px}.mk2-btn{min-width:84px;padding:9px 12px}.mk2-steps{margin-left:0}}
