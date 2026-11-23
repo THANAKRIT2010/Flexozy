@@ -255,89 +255,51 @@ html{background:#070707!important}body{background:transparent!important;overflow
 /* สตูดิโอ obfuscate */
 .mq-pills button:disabled{opacity:.4;cursor:not-allowed}.mq-pills button:disabled:hover{background:transparent}
 
-/* ===== v26.1 สตูดิโอ Obfuscate (obz-): เต็มความกว้าง · 2 ช่องสมดุล · เลขบรรทัดตรงกับโค้ด ===== */
+/* ===== v26.2 สตูดิโอ Obfuscate (obz-): โทนเรียบ คลีน · ไม่มีหัวซ้ำ · ช่องโค้ดสองฝั่งเท่ากัน ===== */
 @keyframes obz-spin{to{transform:rotate(360deg)}}
-.obz{display:flex;flex-direction:column;gap:18px;width:100%;min-width:0;animation:x-in .5s var(--ease-o) both}
-.obz-top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
-.obz-title{display:flex;align-items:center;gap:14px;min-width:0}
-.obz-badge{flex:none;width:46px;height:46px;border-radius:14px;display:grid;place-items:center;color:#fff;background:linear-gradient(145deg,rgba(var(--main-rgb),.95),rgba(var(--main-rgb),.45));box-shadow:0 12px 28px -10px rgba(var(--main-rgb),.7),inset 0 1px 0 rgba(255,255,255,.3)}
-.obz-title h2{margin:0 0 3px;font:800 24px/1.2 var(--hd);color:#fff}
-.obz-title p{margin:0;color:var(--dim);font-size:13px;line-height:1.5}
-.obz-chips{display:flex;gap:8px;flex-wrap:wrap}
-.obz-chip{display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 12px;border-radius:99px;font-size:12px;color:#bdbdc7;background:rgba(255,255,255,.04);border:1px solid var(--line)}
-.obz-chip b{color:#fff;font-variant-numeric:tabular-nums}
-.obz-chip i{width:7px;height:7px;border-radius:50%;background:#555}
-.obz-chip.ok{color:#6ee7b7;border-color:rgba(52,211,153,.35);background:rgba(52,211,153,.08)}
-.obz-chip.ok i{background:#34d399;box-shadow:0 0 8px #34d399}
+.obz{display:flex;flex-direction:column;gap:14px;width:100%;min-width:0;animation:x-in .45s var(--ease-o) both}
+.obz-bar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.obz-tabs{display:inline-flex;gap:2px;padding:3px;border-radius:10px;background:#0c0c0c;border:1px solid #1f1f1f}
+.obz-tabs button{height:32px;padding:0 14px;border:0;border-radius:7px;background:transparent;color:#6b6b6b;font:500 13px var(--font);cursor:pointer;transition:background .15s,color .15s}
+.obz-tabs button:hover:not(:disabled){color:#d4d4d4}
+.obz-tabs button.on{background:#1c1c1c;color:#fff;box-shadow:inset 0 0 0 1px #2a2a2a}
+.obz-tabs button:disabled{cursor:not-allowed;opacity:.4}
+.obz-go{height:36px;min-width:132px;padding:0 20px;border:0;border-radius:9px;background:#f4f4f5;color:#0a0a0a;font:600 13.5px var(--font);cursor:pointer;transition:background .15s,opacity .15s}
+.obz-go:hover:not(:disabled){background:#fff}
+.obz-go:disabled{opacity:.35;cursor:not-allowed}
 
-.obz-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.obz-modes{display:inline-flex;gap:4px;padding:4px;border-radius:14px;background:rgba(12,12,18,.7);border:1px solid var(--line);backdrop-filter:blur(14px)}
-.obz-modes button{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 16px;border:1px solid transparent;border-radius:10px;background:transparent;color:#8d8d97;font:600 13px var(--font);cursor:pointer;transition:background .2s,color .2s,border-color .2s}
-.obz-modes button:hover:not(:disabled){color:#fff;background:rgba(255,255,255,.06)}
-.obz-modes button.on{color:#fff;background:rgba(var(--main-rgb),.22);border-color:rgba(var(--main-rgb),.45);box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
-.obz-modes button:disabled{cursor:not-allowed;opacity:.5}
-.obz-modes em{font-style:normal;font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;background:rgba(255,255,255,.08);color:#9a9aa6}
+.obz-deck{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+.obz-pane{display:flex;flex-direction:column;min-width:0;overflow:hidden;border-radius:12px;background:#080808;border:1px solid #1f1f1f}
+.obz-head{display:flex;align-items:center;justify-content:space-between;gap:10px;height:38px;padding:0 14px;flex:none;border-bottom:1px solid #1a1a1a;font:500 12px var(--font);color:#8a8a8a}
+.obz-count{font:400 11.5px 'JetBrains Mono',Consolas,monospace;color:#555;font-variant-numeric:tabular-nums}
 
-.obz-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.obz-go{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:42px;padding:0 20px;border:0;border-radius:12px;cursor:pointer;color:#fff;font:700 14px var(--font);background:linear-gradient(135deg,var(--main),var(--main-alt));box-shadow:0 12px 28px -12px rgba(var(--main-rgb),.85),inset 0 1px 0 rgba(255,255,255,.25);transition:transform .2s,filter .2s,box-shadow .2s}
-.obz-go:hover:not(:disabled){transform:translateY(-1px);filter:brightness(1.07);box-shadow:0 16px 34px -12px rgba(var(--main-rgb),1),inset 0 1px 0 rgba(255,255,255,.25)}
-.obz-go:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
-.obz-go kbd{font:600 10px 'JetBrains Mono',Consolas,monospace;padding:2px 6px;border-radius:6px;border:1px solid rgba(255,255,255,.35);background:rgba(0,0,0,.15);opacity:.85}
-.obz-ghost{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:9px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:#b4b4bd;font:600 12px var(--font);cursor:pointer;transition:.15s}
-.obz-ghost:hover:not(:disabled){color:#fff;border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.07)}
-.obz-ghost:disabled{opacity:.4;cursor:not-allowed}
-.obz-ghost.sm{height:28px;padding:0 10px;font-size:11.5px}
-.obz-ghost.done{color:#6ee7b7;border-color:rgba(52,211,153,.4)}
-.obz-spin{display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;animation:obz-spin .7s linear infinite}
-.obz-spin.lg{width:28px;height:28px;border-width:3px;border-color:rgba(var(--main-rgb),.25);border-top-color:var(--main-soft)}
-
-.obz-deck{display:grid;grid-template-columns:minmax(0,1fr) 52px minmax(0,1fr);align-items:stretch;border-radius:20px}
-.obz-pane{display:flex;flex-direction:column;min-width:0;overflow:hidden;border-radius:18px;background:linear-gradient(180deg,rgba(22,22,30,.82),rgba(10,10,15,.9));border:1px solid var(--line);box-shadow:0 30px 70px -36px #000,inset 0 1px 0 rgba(255,255,255,.05)}
-.obz-flow{display:flex;align-items:center;justify-content:center}
-.obz-flow span{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:var(--main-soft);background:rgba(var(--main-rgb),.12);border:1px solid rgba(var(--main-rgb),.35);box-shadow:0 0 22px -4px rgba(var(--main-rgb),.5)}
-
-.obz-head{display:flex;align-items:center;justify-content:space-between;gap:10px;height:50px;padding:0 12px 0 16px;flex:none;background:rgba(255,255,255,.025);border-bottom:1px solid var(--line)}
-.obz-file{display:flex;align-items:center;gap:9px;min-width:0}
-.obz-dot{width:8px;height:8px;border-radius:50%;background:#555;flex:none}
-.obz-dot.ok{background:#34d399;box-shadow:0 0 10px #34d399}
-.obz-name{font:600 12.5px 'JetBrains Mono',Consolas,monospace;color:#f0f0f5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.obz-tools{display:flex;gap:6px;flex:none}
-
-/* ช่องโค้ด: เลขบรรทัดกับ textarea ใช้ฟอนต์/line-height/padding ชุดเดียวกัน จึงตรงกันเป๊ะ */
-.obz-ed{position:relative;display:flex;height:clamp(360px,60vh,600px);background:#06060a;overflow:hidden}
-.obz .obz-gut,.obz .obz-ta{font:400 13px/21px 'JetBrains Mono',Consolas,Menlo,monospace;font-variant-ligatures:none;tab-size:2;white-space:pre;margin:0;box-sizing:border-box}
-.obz .obz-gut{flex:none;width:58px;overflow:hidden;padding:16px 14px 16px 0;text-align:right;color:rgba(255,255,255,.2);background:rgba(255,255,255,.015);border-right:1px solid var(--line);user-select:none}
-.obz .obz-ta{flex:1;min-width:0;height:100%;min-height:0;width:auto;padding:16px 18px;border:0;border-radius:0;background:transparent;color:#e9e6ff;resize:none;overflow:auto;box-shadow:none;outline:none}
+.obz-ed{position:relative;display:flex;height:clamp(340px,60vh,600px);min-height:0}
+.obz .obz-gut,.obz .obz-ta{font:400 13px/21px 'JetBrains Mono',Consolas,Menlo,monospace;font-variant-ligatures:none;tab-size:2;margin:0;box-sizing:border-box}
+.obz .obz-gut{flex:none;width:50px;overflow:hidden;padding:14px 12px 14px 0;text-align:right;white-space:pre;color:#3a3a3a;user-select:none}
+.obz .obz-ta{flex:1;min-width:0;height:100%;min-height:0;width:auto;padding:14px 16px 14px 8px;border:0;border-radius:0;background:transparent;color:#e4e4e7;resize:none;overflow:auto;box-shadow:none;outline:none;white-space:pre}
+.obz .obz-ta::placeholder{color:#333}
 .obz .obz-ta:focus,.obz .obz-ta:hover{border:0;box-shadow:none;background:transparent}
-.obz .obz-ta::placeholder{color:rgba(255,255,255,.22);white-space:pre}
-.obz .obz-ta[readonly]{color:#c4b5fd}
+.obz .obz-out{white-space:pre-wrap;word-break:break-all;padding:14px 16px;color:#a1a1aa;font-size:12px;line-height:1.6;overflow-y:auto;overflow-x:hidden}
+.obz .obz-ta::-webkit-scrollbar{width:8px;height:8px}.obz .obz-ta::-webkit-scrollbar-thumb{background:#222;border-radius:8px}
 
-.obz-empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;pointer-events:none;color:var(--dim);background:radial-gradient(ellipse at center,rgba(var(--main-rgb),.06),transparent 70%)}
-.obz-empty span{width:50px;height:50px;border-radius:16px;display:grid;place-items:center;margin-bottom:6px;color:var(--main-soft);background:rgba(var(--main-rgb),.12);border:1px solid rgba(var(--main-rgb),.3)}
-.obz-empty b{color:#fff;font-size:14px}.obz-empty small{font-size:12px}
-.obz-busy{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(6,6,10,.6);backdrop-filter:blur(3px);color:#fff;font-size:13px}
+.obz-empty{position:absolute;top:14px;left:16px;color:#3a3a3a;font-size:13px;pointer-events:none}
+.obz-busy{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.5)}
+.obz-spin{width:22px;height:22px;border-radius:50%;border:2px solid #2a2a2a;border-top-color:#e4e4e7;animation:obz-spin .7s linear infinite}
 
-.obz-foot{display:flex;align-items:center;gap:12px;height:40px;padding:0 16px;flex:none;font-size:11.5px;color:var(--dim);border-top:1px solid var(--line);background:rgba(255,255,255,.02)}
+.obz-foot{display:flex;align-items:center;gap:4px;height:42px;padding:0 8px;flex:none;border-top:1px solid #1a1a1a}
 .obz-grow{flex:1}
-.obz-num{font-variant-numeric:tabular-nums;color:#a3a3ad}
-.obz-meter{flex:1;max-width:220px;height:4px;border-radius:4px;background:rgba(255,255,255,.08);overflow:hidden}
-.obz-meter i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,var(--main),var(--main-alt));transition:width .2s}
-.obz-meter i.hot{background:#fb7185}
-.obz-foot>span:first-child{white-space:nowrap}
+.obz-ic{display:grid;place-items:center;width:32px;height:32px;border:0;border-radius:8px;background:transparent;color:#777;cursor:pointer;transition:background .15s,color .15s}
+.obz-ic:hover:not(:disabled){background:#161616;color:#e4e4e7}
+.obz-ic:disabled{opacity:.25;cursor:not-allowed}
 
-.obz-err{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;font-size:13px;color:#fda4af;background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.35)}
+.obz-err{padding:10px 14px;border-radius:10px;font-size:13px;color:#fda4af;background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.28)}
 
 @media(max-width:900px){
-  .obz-deck{grid-template-columns:minmax(0,1fr);gap:14px}
-  .obz-flow{display:none}
-  .obz-ed{height:340px}
-  .obz-modes{width:100%;display:flex}
-  .obz-modes button{flex:1;justify-content:center;padding:0 10px}
-  .obz-bar{flex-direction:column;align-items:stretch}
-  .obz-actions{width:100%}
-  .obz-go{width:100%;min-height:46px}
-  .obz-go kbd{display:none}
-  .obz-chips{display:none}
-  .obz-title h2{font-size:21px}
+  .obz-deck{grid-template-columns:minmax(0,1fr)}
+  .obz-ed{height:320px}
 }
-@media(max-width:420px){.obz-modes em{display:none}.obz .obz-gut{width:44px;padding-right:10px}.obz .obz-ta{padding:16px 12px}}
+@media(max-width:600px){
+  .obz-bar{flex-direction:column;align-items:stretch}
+  .obz-tabs{display:flex}.obz-tabs button{flex:1}
+  .obz-go{width:100%;height:42px}
+}
