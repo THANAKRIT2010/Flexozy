@@ -252,3 +252,5 @@ html{background:#070707!important}body{background:transparent!important;overflow
 .mk2-row.done .mk2-steps .ln b{background:#34d399;transition:width .4s}
 .mk2-card .mk-go:disabled{animation:none;box-shadow:none;opacity:.45;filter:saturate(.4)}
 @media(max-width:600px){.mk2-time{font-size:36px}.mk2-btn{min-width:84px;padding:9px 12px}.mk2-steps{margin-left:0}}
+/* สตูดิโอ obfuscate */
+.mq-pills button:disabled{opacity:.4;cursor:not-allowed}.mq-pills button:disabled:hover{background:transparent}
