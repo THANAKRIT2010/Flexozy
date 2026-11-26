@@ -16,7 +16,11 @@ export async function POST(req){
   const script = String(b.script || '');
   if(!script.trim()) return NextResponse.json({ error:'empty', message:'กรุณาวางโค้ดก่อน' }, { status:400 });
   if(!u.is_admin && script.length > MAX_INPUT) return NextResponse.json({ error:'too_large', message:`โค้ดยาวเกินไป (จำกัด ${MAX_INPUT.toLocaleString()} ตัวอักษร)` }, { status:400 });
-  const preset = b.preset === 'FAST' ? 'FAST' : 'DEFAULT';
+  // DEFAULT preset ลองสร้าง runtime ได้ถึง 3 รอบ (ratio 1.0, 0.5, 0.0) เพื่อหาผลลัพธ์ที่ขนาดพอดี
+  // กับสคริปต์ยาว งานนี้หนักขึ้นมากและเสี่ยงชน timeout ของ serverless function
+  // → บังคับใช้ FAST (ratio 0.5 รอบเดียว) อัตโนมัติเมื่ออินพุตยาวเกินค่านี้ ไม่ว่าผู้ใช้จะเลือก preset อะไรมา
+  const FAST_AUTO_THRESHOLD = 50000;
+  const preset = (b.preset === 'FAST' || script.length > FAST_AUTO_THRESHOLD) ? 'FAST' : 'DEFAULT';
   try{
     // แอดมินไม่จำกัดความยาว → เพดานผลลัพธ์ของตัวสร้างก็ขยายตามขนาดอินพุตด้วย (ผู้ใช้ทั่วไปใช้ค่าเดิม 6,000,000)
     const out = obfuscate(script, u.is_admin ? Math.max(6000000, script.length * 40) : 6000000, preset);

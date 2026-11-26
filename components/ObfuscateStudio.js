@@ -22,11 +22,31 @@ export default function ObfuscateStudio({ admin = false }){
   async function run(){
     if(busy || !script.trim()) return;
     setBusy(true); setErr('');
+    // กันค้าง: ยกเลิกฝั่ง client เองก่อนที่แพลตฟอร์ม hosting จะตัดการเชื่อมต่อแบบไม่มีคำตอบ
+    // (ปรับเลขนี้ให้ต่ำกว่า maxDuration ของ route.js เสมอ เผื่อเวลาส่ง-รับข้อมูล)
+    const CLIENT_TIMEOUT_MS = 55000;
+    const ctrl = new AbortController();
+    const to = setTimeout(() => ctrl.abort(), CLIENT_TIMEOUT_MS);
     try{
-      const r = await fetch('/api/obfuscate', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ script }) });
-      const d = await r.json();
-      if(!r.ok) setErr(d.message || 'obfuscate ไม่สำเร็จ'); else setOut(d.output);
-    }catch{ setErr('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้'); }
+      const r = await fetch('/api/obfuscate', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ script }), signal: ctrl.signal });
+      const ct = r.headers.get('content-type') || '';
+      if(!ct.includes('application/json')){
+        // ตอบกลับไม่ใช่ JSON = ไม่ได้มาจาก route handler ของเรา (เช่นหน้า 504/502 ของ hosting เอง)
+        // นี่คือ "เซิร์ฟเวอร์ประมวลผลนานเกินไป" จริงๆ ไม่ใช่เน็ตเวิร์กหลุด
+        setErr(r.status === 504 || r.status === 408
+          ? 'เซิร์ฟเวอร์ใช้เวลาประมวลผลนานเกินไป ลองย่อโค้ดให้สั้นลงหรือลองใหม่อีกครั้ง'
+          : `เซิร์ฟเวอร์ตอบกลับไม่ถูกต้อง (HTTP ${r.status})`);
+      }else{
+        const d = await r.json();
+        if(!r.ok) setErr(d.message || 'obfuscate ไม่สำเร็จ'); else setOut(d.output);
+      }
+    }catch(e){
+      setErr(e?.name === 'AbortError'
+        ? `การประมวลผลใช้เวลานานเกิน ${Math.round(CLIENT_TIMEOUT_MS / 1000)} วินาที — โค้ดอาจยาวเกินไป ลองย่อขนาดหรือแบ่งรันหลายรอบ`
+        : 'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ ตรวจสอบอินเทอร์เน็ตแล้วลองใหม่');
+    }finally{
+      clearTimeout(to);
+    }
     setBusy(false);
   }
 
