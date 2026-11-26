@@ -17,7 +17,7 @@ const VIEWS = {
   bans:{ t:'คำขอ & แบน', s:'ดูคนที่ส่งคำขอ/รันสคริปต์ (IP · HWID · Roblox) แล้วแบนได้ — แบนแล้วใช้ลิงก์หรือสคริปต์ผ่าน API ไม่ได้เลย', i:'shield' },
   runners:{ t:'โปรไฟล์ผู้รัน Loader', s:'ดูโปรไฟล์ Roblox ที่รัน Loader ด้วย key — เห็นได้จากหน้านี้เลย ไม่ต้องเข้าหลังบ้านก่อน', i:'users' },
   tokens:{ t:'TOKEN & เติมเงิน', s:'เติม TOKEN ด้วยซอง TrueMoney ดูยอดคงเหลือและกติกาการใช้', i:'bolt' },
-  obfuscate:{ t:'สตูดิโอ Obfuscate', s:'วางโค้ด Lua แล้วกด Obfuscate', i:'shield' },
+  obfuscate:{ t:'สตูดิโอ Obfuscate', s:'วางโค้ด Lua แล้วกด Obfuscate · ผู้ใช้ทั่วไปได้สูงสุด 300,000 ตัวอักษร (แอดมินไม่จำกัด)', i:'shield' },
 };
 const NAV = [[null, ['overview']], ['สคริปต์', ['create', 'links', 'obfuscate']], ['บัญชี', ['tokens']]];
 const SER = [{ key:'r', name:'ยอดรัน', color:'#a78bfa' }, { key:'l', name:'ลิงก์ใหม่', color:'#f0abfc' }, { key:'k', name:'ล็อกรหัส', color:'#67e8f9' }];
@@ -120,7 +120,7 @@ export default function Dashboard({ site }){
         {view === 'runners' && me.is_admin && <RunnersPanel/>}
         {view === 'bans' && me.is_admin && <BansPanel/>}
         {view === 'create' && <div className="lf-wrap"><LinkForm endpoint="/api/vault" onCreated={reload} tokens={tok ?? null} lockCost={cost} admin={!!me.is_admin}/></div>}
-        {view === 'obfuscate' && <div className="lf-wrap"><ObfuscateStudio/></div>}
+        {view === 'obfuscate' && <div className="lf-wrap"><ObfuscateStudio admin={!!me.is_admin}/></div>}
 
         {view === 'links' && <>
           <div className="dz-tools"><div className="dz-find"><Icon n="eye" size={15}/><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="ค้นหาชื่อหรือรหัสลิงก์"/></div><span className="grow"/><a className="dz-btn pri" href="#create" onClick={(e) => { e.preventDefault(); go('create'); }}><Icon n="plus" size={15}/>ฝากลิงก์ใหม่</a></div>

@@ -217,3 +217,28 @@
 .ad-group{text-transform:uppercase;letter-spacing:.12em;font-size:10.5px}
 .ad tbody tr:hover td{background:rgba(255,255,255,.03)}
 @media(max-width:860px){.ad-main{padding:0 14px 40px}.ad-bar{margin:0 -14px;padding:0 14px}.ad-top{padding:14px 16px;margin:14px 0}.ad-top-ic{display:none}.ad-chip:not(.me){display:none}}
+
+/* ===== v27 · หลังบ้าน = หน้าตาเดียวกับแดชบอร์ด (ใช้ fx dz โครงเดียวกัน) ===== */
+.ad.dz{grid-template-columns:244px minmax(0,1fr);font-size:14px}
+.ad.dz .dz-page{max-width:1440px}
+.ad.dz .dz-ph{margin-bottom:20px}
+.dz-role{margin-left:auto;padding:2px 8px;border-radius:99px;font-size:9.5px;font-weight:800;letter-spacing:.12em;color:var(--main-soft);background:rgba(var(--main-rgb),.16);border:1px solid rgba(var(--main-rgb),.45)}
+.ad .dz-brand{letter-spacing:.1em}.ad .dz-sel .av{flex:none}
+.ad .dz-bar .dz-btn{height:36px}
+/* ปุ่ม/ช่องกรอกในเนื้อหาให้โทนเดียวกับ dz-btn / dz-find */
+.ad .btn{border-radius:12px;font-weight:700;border:0;background:linear-gradient(120deg,var(--g1),var(--g2));color:var(--on-main);box-shadow:0 10px 26px -10px rgba(var(--main-rgb),.85),inset 0 1px 0 rgba(255,255,255,.35)}
+.ad .btn.ghost{background:rgba(255,255,255,.06);color:var(--text);border:1px solid rgba(255,255,255,.14);box-shadow:none;backdrop-filter:blur(10px)}
+.ad .btn.ghost:hover:not(:disabled){background:rgba(var(--main-rgb),.16);border-color:rgba(var(--main-rgb),.7);transform:translateY(-1px)}
+.ad .btn.danger{background:rgba(255,255,255,.04);border:1px solid rgba(251,113,133,.45)}
+.ad .btn.sm{border-radius:10px}
+.ad input,.ad textarea,.ad select{background:#0c0c0e;border:1px solid var(--line-2);border-radius:10px}
+.ad input:focus,.ad textarea:focus,.ad select:focus{border-color:rgba(var(--main-rgb),.8);box-shadow:0 0 0 3px rgba(var(--main-rgb),.2)}
+.ad .pn-h{padding-bottom:12px;border-bottom:1px solid var(--line);margin-bottom:16px}
+.ad .ad-tw{border-radius:14px;background:rgba(0,0,0,.2)}
+.ad th{background:#0d0d10;text-transform:none}
+.ad .seg button.on,.ad .mq-pills button.on{color:#0a0a0c}
+@media(max-width:860px){
+  .ad.dz{grid-template-columns:minmax(0,1fr)}
+  .dz-hide-sm{display:none}.ad .dz-bar .dz-btn{width:36px;padding:0}
+  .ad.dz .dz-page{padding:14px}
+}

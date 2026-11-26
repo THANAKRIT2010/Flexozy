@@ -12,7 +12,7 @@ function numbers(count){
   return s;
 }
 
-export default function ObfuscateStudio(){
+export default function ObfuscateStudio({ admin = false }){
   const [script, setScript] = useState(''), [out, setOut] = useState(''), [busy, setBusy] = useState(false), [err, setErr] = useState(''), [cp, setCp] = useState(false);
   const gut = useRef(null);
 
@@ -57,11 +57,11 @@ export default function ObfuscateStudio(){
 
     <div className="obz-deck">
       <section className="obz-pane">
-        <header className="obz-head"><span>Script</span><span className="obz-count">{script.length.toLocaleString()} / {MAX_IN.toLocaleString()}</span></header>
+        <header className="obz-head"><span>Script</span><span className="obz-count">{script.length.toLocaleString()} / {admin ? 'ไม่จำกัด' : MAX_IN.toLocaleString()}{admin && <em className="obz-adm">ADMIN</em>}</span></header>
         <div className="obz-ed">
           <pre className="obz-gut" ref={gut} aria-hidden="true">{nums}</pre>
           <textarea className="obz-ta" value={script}
-            onChange={(e) => setScript(e.target.value.slice(0, MAX_IN))}
+            onChange={(e) => setScript(admin ? e.target.value : e.target.value.slice(0, MAX_IN))}
             onScroll={(e) => { if(gut.current) gut.current.scrollTop = e.target.scrollTop; }}
             placeholder={'print("Hello World")'} spellCheck={false} wrap="off" aria-label="โค้ดต้นฉบับ"/>
         </div>
