@@ -1,6 +1,6 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, after } from 'next/server';
 import { getUser } from '@/lib/session';
-import { hit } from '@/lib/db';
+import { hit, saveObfJob, getObfJob } from '@/lib/db';
 import { clientIp } from '@/lib/net';
 import { obfuscate, LuaSyntaxError, BuildFlagError } from '@/lib/obf/pipeline';
 export const dynamic = 'force-dynamic'; export const maxDuration = 60;
@@ -8,6 +8,18 @@ export const dynamic = 'force-dynamic'; export const maxDuration = 60;
 // เป็น JS ล้วน ตรวจสอบผลลัพธ์แล้วว่าตรงกับต้นฉบับ Python 100% บน sample จริงที่รันผ่าน Luau จริง)
 const MAX_INPUT = 300000; // ผู้ใช้ทั่วไป: จำกัด 300,000 ตัวอักษร (กันอินพุตใหญ่เกินไปทำให้ serverless function ช้า/timeout) · แอดมิน: ไม่จำกัด
 const HEADER = '-- This script was generated using Flexozy 2.1.0 [https://flexozy.xyz/]\n';
+// เดิม: POST รอ obfuscate() ทำงานจนจบแล้วค่อยตอบ response เดียว — ถ้าโค้ดยาวและใช้เวลานาน มีโอกาสโดน
+// proxy/host/เบราว์เซอร์ตัดคำขอก่อนเสร็จ (ไม่ใช่เน็ตเวิร์กหลุดจริง) ทำให้ fetch() ฝั่ง client โยน error
+// ใหม่: แยกเป็น 2 ขั้น — POST สร้าง "job" แล้วตอบกลับทันที (ไม่รอ) ส่วนงานหนักไปรันเบื้องหลังด้วย
+// after() (Next.js >=15.1) ซึ่งทำให้ function ยังมีชีวิตอยู่ทำงานต่อได้แม้ response ถูกส่งไปแล้ว
+// ฝั่ง client แค่ poll ผลลัพธ์เป็นระยะด้วย GET (คำขอสั้นๆ ไม่มีทางค้างจนโดนตัด) จนกว่า job จะเสร็จ
+// หมายเหตุสำคัญ: ตัวอัลกอริทึมและ preset ไม่เปลี่ยนแปลงเลย (ยังเป็น DEFAULT 3 รอบ ratio เหมือนเดิม
+// ทุกประการ) การแก้นี้แก้แค่ "รูปแบบการคุยกับ server" ไม่ได้ลดงานหรือคุณภาพผลลัพธ์แต่อย่างใด
+// ข้อจำกัดที่ยังอยู่: ถ้า obfuscate() ใช้เวลารวมนานกว่าขีดจำกัดจริงของแพลน hosting (ดู maxDuration
+// ด้านบน — ต้องตรงกับสิ่งที่แพลนรองรับจริง) งานเบื้องหลังก็ยังโดนตัดได้เหมือนเดิม เพียงแต่กรณีนี้
+// จะเกิดเฉพาะตอนที่ "คำนวณจริงๆ นานเกินไป" เท่านั้น ไม่ใช่ทุกครั้งที่โค้ดยาวแบบเมื่อก่อน
+const JOB_TTL_MS = 10 * 60 * 1000; // job เก่าเกิน 10 นาทียังไม่เสร็จ ถือว่าหมดเวลา
+
 export async function POST(req){
   const u = await getUser(); if(!u) return NextResponse.json({ error:'not_authenticated' }, { status:401 });
   const ip = clientIp(req) || 'x';
@@ -16,18 +28,41 @@ export async function POST(req){
   const script = String(b.script || '');
   if(!script.trim()) return NextResponse.json({ error:'empty', message:'กรุณาวางโค้ดก่อน' }, { status:400 });
   if(!u.is_admin && script.length > MAX_INPUT) return NextResponse.json({ error:'too_large', message:`โค้ดยาวเกินไป (จำกัด ${MAX_INPUT.toLocaleString()} ตัวอักษร)` }, { status:400 });
-  // DEFAULT preset ลองสร้าง runtime ได้ถึง 3 รอบ (ratio 1.0, 0.5, 0.0) เพื่อหาผลลัพธ์ที่ขนาดพอดี
-  // กับสคริปต์ยาว งานนี้หนักขึ้นมากและเสี่ยงชน timeout ของ serverless function
-  // → บังคับใช้ FAST (ratio 0.5 รอบเดียว) อัตโนมัติเมื่ออินพุตยาวเกินค่านี้ ไม่ว่าผู้ใช้จะเลือก preset อะไรมา
-  const FAST_AUTO_THRESHOLD = 50000;
-  const preset = (b.preset === 'FAST' || script.length > FAST_AUTO_THRESHOLD) ? 'FAST' : 'DEFAULT';
-  try{
-    // แอดมินไม่จำกัดความยาว → เพดานผลลัพธ์ของตัวสร้างก็ขยายตามขนาดอินพุตด้วย (ผู้ใช้ทั่วไปใช้ค่าเดิม 6,000,000)
-    const out = obfuscate(script, u.is_admin ? Math.max(6000000, script.length * 40) : 6000000, preset);
-    return NextResponse.json({ ok:true, output: HEADER + out });
-  }catch(e){
-    if(e instanceof LuaSyntaxError || e instanceof BuildFlagError) return NextResponse.json({ error:'syntax', message:e.message }, { status:400 });
-    console.error('obfuscate failed', e);
-    return NextResponse.json({ error:'internal', message:'เกิดข้อผิดพลาดระหว่างการทำงาน' }, { status:500 });
+  const preset = b.preset === 'FAST' ? 'FAST' : 'DEFAULT'; // ไม่เปลี่ยนพฤติกรรม — เคารพค่าที่ client ส่งมาเท่านั้น เหมือนเดิมทุกประการ
+
+  const jobId = crypto.randomUUID();
+  await saveObfJob(jobId, { status:'pending', uid:u.id, createdAt:Date.now() });
+
+  // งานหนัก (parse/compile/สร้าง runtime) ไปรันเบื้องหลัง — ไม่ await ตรงนี้ จึงไม่ถ่วงการตอบ response
+  after(async () => {
+    try{
+      // แอดมินไม่จำกัดความยาว → เพดานผลลัพธ์ของตัวสร้างก็ขยายตามขนาดอินพุตด้วย (ผู้ใช้ทั่วไปใช้ค่าเดิม 6,000,000)
+      const out = obfuscate(script, u.is_admin ? Math.max(6000000, script.length * 40) : 6000000, preset);
+      await saveObfJob(jobId, { status:'done', uid:u.id, output: HEADER + out, createdAt:Date.now() });
+    }catch(e){
+      if(e instanceof LuaSyntaxError || e instanceof BuildFlagError){
+        await saveObfJob(jobId, { status:'error', uid:u.id, error:'syntax', message:e.message, createdAt:Date.now() });
+      }else{
+        console.error('obfuscate failed', e);
+        await saveObfJob(jobId, { status:'error', uid:u.id, error:'internal', message:'เกิดข้อผิดพลาดระหว่างการทำงาน', createdAt:Date.now() });
+      }
+    }
+  });
+
+  return NextResponse.json({ ok:true, jobId });
+}
+
+// ฝั่ง client เรียกซ้ำเป็นระยะด้วย GET /api/obfuscate?job=<jobId> จนกว่าจะได้ status 'done' หรือ 'error'
+export async function GET(req){
+  const u = await getUser(); if(!u) return NextResponse.json({ error:'not_authenticated' }, { status:401 });
+  const jobId = new URL(req.url).searchParams.get('job');
+  if(!jobId) return NextResponse.json({ error:'missing_job', message:'ไม่พบหมายเลขงาน' }, { status:400 });
+  const job = await getObfJob(jobId);
+  if(!job || job.uid !== u.id) return NextResponse.json({ error:'not_found', message:'ไม่พบงานนี้ หรือหมดเวลาแล้ว' }, { status:404 });
+  if(job.status === 'pending' && Date.now() - job.createdAt > JOB_TTL_MS){
+    return NextResponse.json({ error:'timeout', message:'การประมวลผลใช้เวลานานเกินไป ลองใหม่อีกครั้ง' }, { status:408 });
   }
+  if(job.status === 'done') return NextResponse.json({ ok:true, status:'done', output: job.output });
+  if(job.status === 'error') return NextResponse.json({ ok:false, status:'error', error:job.error, message:job.message }, { status:400 });
+  return NextResponse.json({ ok:true, status:'pending' });
 }
