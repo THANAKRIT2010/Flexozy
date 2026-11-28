@@ -14,6 +14,9 @@ function numbers(count){
 
 export default function ObfuscateStudio({ admin = false }){
   const [script, setScript] = useState(''), [out, setOut] = useState(''), [busy, setBusy] = useState(false), [err, setErr] = useState(''), [cp, setCp] = useState(false);
+  // สคริปต์ที่ output ใหญ่เกิน KV ไหว (ดู INLINE_LIMIT ฝั่ง server) จะได้ลิงก์ดาวน์โหลดจาก Vercel Blob
+  // กลับมาแทนเนื้อไฟล์ตรงๆ — ตั้งใจไม่โหลดไฟล์ขนาดเป็นร้อย MB เข้ามาใน textarea เพราะจะทำให้แท็บค้าง/แครช
+  const [downloadUrl, setDownloadUrl] = useState(''), [outLen, setOutLen] = useState(0);
   const gut = useRef(null);
 
   const lines = useMemo(() => (script ? script.split('\n').length : 0), [script]);
@@ -34,7 +37,11 @@ export default function ObfuscateStudio({ admin = false }){
         continue; // เน็ตสะดุดชั่วคราวระหว่าง poll ไม่ถือว่า fail ทันที รอบหน้าลองใหม่
       }
       if (!d) continue;
-      if (d.status === 'done') { setOut(d.output); return; }
+      if (d.status === 'done') {
+        if (d.downloadUrl) { setDownloadUrl(d.downloadUrl); setOutLen(d.outputLength || 0); }
+        else setOut(d.output);
+        return;
+      }
       if (d.status === 'error' || d.error === 'timeout' || d.error === 'not_found') { setErr(d.message || 'obfuscate ไม่สำเร็จ'); return; }
       // status === 'pending' → รอรอบถัดไป
     }
@@ -43,7 +50,7 @@ export default function ObfuscateStudio({ admin = false }){
 
   async function run(){
     if(busy || !script.trim()) return;
-    setBusy(true); setErr(''); setOut('');
+    setBusy(true); setErr(''); setOut(''); setDownloadUrl(''); setOutLen(0);
     try{
       const r = await fetch('/api/obfuscate', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ script }) });
       const d = await r.json().catch(() => null);
@@ -65,6 +72,7 @@ export default function ObfuscateStudio({ admin = false }){
 
   function copy(){ copyText(out); setCp(true); setTimeout(() => setCp(false), 1200); }
   function download(){
+    if (downloadUrl) { window.open(downloadUrl, '_blank'); return; }
     const blob = new Blob([out], { type:'text/plain' }), a = document.createElement('a');
     a.href = URL.createObjectURL(blob); a.download = 'obfuscated.lua'; a.click(); URL.revokeObjectURL(a.href);
   }
@@ -98,16 +106,25 @@ export default function ObfuscateStudio({ admin = false }){
       </section>
 
       <section className="obz-pane">
-        <header className="obz-head"><span>Output</span><span className="obz-count">{out ? out.length.toLocaleString() + ' ตัวอักษร' : ''}</span></header>
+        <header className="obz-head"><span>Output</span><span className="obz-count">{downloadUrl ? outLen.toLocaleString() + ' ตัวอักษร' : out ? out.length.toLocaleString() + ' ตัวอักษร' : ''}</span></header>
         <div className="obz-ed">
-          <textarea className="obz-ta obz-out" value={out} readOnly wrap="soft" spellCheck={false} aria-label="ผลลัพธ์"/>
-          {!out && !busy && <div className="obz-empty">ผลลัพธ์จะแสดงที่นี่</div>}
+          {downloadUrl ? (
+            // ไฟล์ใหญ่เกินกว่าจะโหลดเข้ามาแสดงในกล่องข้อความได้โดยไม่ทำให้แท็บค้าง — ให้ดาวน์โหลดแทน
+            <div className="obz-empty">
+              ผลลัพธ์มีขนาด {(outLen / (1024*1024)).toFixed(1)} MB ใหญ่เกินจะแสดงในนี้ได้<br/>
+              <button type="button" className="obz-go" style={{ marginTop:8 }} onClick={download}>ดาวน์โหลดไฟล์ผลลัพธ์</button><br/>
+              <small>ลิงก์ดาวน์โหลดจะหมดอายุใน 30 นาที</small>
+            </div>
+          ) : (
+            <textarea className="obz-ta obz-out" value={out} readOnly wrap="soft" spellCheck={false} aria-label="ผลลัพธ์"/>
+          )}
+          {!out && !downloadUrl && !busy && <div className="obz-empty">ผลลัพธ์จะแสดงที่นี่</div>}
           {busy && <div className="obz-busy"><span className="obz-spin"/></div>}
         </div>
         <footer className="obz-foot">
           <span className="obz-grow"/>
           <button type="button" className="obz-ic" onClick={copy} disabled={!out} title={cp ? 'คัดลอกแล้ว' : 'คัดลอก'} aria-label="คัดลอก"><Icon n={cp ? 'check' : 'copy'} size={15}/></button>
-          <button type="button" className="obz-ic" onClick={download} disabled={!out} title="ดาวน์โหลด" aria-label="ดาวน์โหลด"><Icon n="download" size={15}/></button>
+          <button type="button" className="obz-ic" onClick={download} disabled={!out && !downloadUrl} title="ดาวน์โหลด" aria-label="ดาวน์โหลด"><Icon n="download" size={15}/></button>
         </footer>
       </section>
     </div>
